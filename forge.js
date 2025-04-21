@@ -1,5 +1,5 @@
-// foundry.js
-// a research client for evaluating models
+// forge.js
+// a research client for models
 // (c)2025 Simon Armstrong
 
 // linter is on, constification continues
@@ -7,7 +7,7 @@
 
 // binaries are available on github
 //
-// https://github.com/nitrologic/foundry/releases
+// https://github.com/nitrologic/forge/releases
 //
 // or install deno and run from source https://deno.com/
 //
@@ -22,14 +22,14 @@ const slowMillis=25;
 const SpentTokenChar="¤";
 const MaxFileSize=65536;
 
-const foundryVersion = "rc2";
-const rohaTitle="foundry "+foundryVersion;
-const rohaMihi="I am testing foundry client. You are a helpful assistant.";
+const forgeVersion = "1.0.1";
+const rohaTitle="forge "+forgeVersion;
+const rohaMihi="I am testing roha forge client. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const pageBreak="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# #+#+# #+#+# #+#+# #+#+# #+# #+#+# #+#";
 
 const appDir=Deno.cwd();
-const rohaPath=resolve(appDir,"foundry.json");
+const rohaPath=resolve(appDir,"forge.json");
 const accountsPath = resolve(appDir,"accounts.json");
 const ratesPath=resolve(appDir,"modelrates.json");
 const forgePath=resolve(appDir,"forge");
@@ -85,8 +85,8 @@ function cleanup(){
 	Deno.stdin.setRaw(false);
 }
 
-async function exitFoundry(){
-	echo("exitFoundry");
+async function exitForge(){
+	echo("exitForge");
 	await flush();
 	if(roha.config.saveonexit){
 		await saveHistory();
@@ -188,7 +188,7 @@ function listHistory(){
 	for(let i=0;i<history.length;i++){
 		let item=history[i];
 		let content=readable(item.content).substring(0,90)
-		echo(i,item.role,item.name||"foundry","-",content);
+		echo(i,item.role,item.name||"forge","-",content);
 	}
 	if(roha.config.broken){
 		let flat=squashMessages(rohaHistory);
@@ -200,7 +200,7 @@ function listHistory(){
 	}
 }
 
-function rohaPush(content,name="foundry"){
+function rohaPush(content,name="forge"){
 	rohaHistory.push({role:"user",name,content});
 }
 
@@ -310,7 +310,7 @@ async function log(lines,id){
 			line=time+" ["+id+"] "+line+"\n";
 			list.push(line);
 		}
-		await Deno.writeTextFile("foundry.log",list.join(),{append:true});
+		await Deno.writeTextFile("forge.log",list.join(),{append:true});
 	}
 }
 
@@ -426,14 +426,14 @@ async function resetModel(name){
 	rohaHistory.push({role:"system",content:"Model changed to "+name+"."});
 	let rate=(name in modelRates)?modelRates[name].pricing||[0,0]:[0,0];
 	echo("model:",name,"tool",grokFunctions,"rates",rate[0].toFixed(2)+","+rate[1].toFixed(2));
-	await writeFoundry();
+	await writeForge();
 }
 
 function dropShares(){
 	let dirty=false;
 	for(const item of rohaHistory){
 		if(item.role==="user" && item.name==="forge"){
-			item.user="foundry";
+			item.user="forge";
 			item.content="dropped share";
 			dirty=true;
 		}
@@ -478,7 +478,7 @@ async function saveHistory(name) {
 		await Deno.writeTextFile(filePath,JSON.stringify(rohaHistory,null,"\t"));
 		echo(line);
 		roha.saves.push(filename);
-		await writeFoundry();
+		await writeForge();
 	} catch (error) {
 		console.error("Error saving history:", error.message);
 	}
@@ -619,7 +619,7 @@ async function hashFile(filePath) {
 	).join("");
 }
 
-async function readFoundry(){
+async function readForge(){
 	try {
 		const fileContent = await Deno.readTextFile(rohaPath);
 		roha = JSON.parse(fileContent);
@@ -635,7 +635,7 @@ async function readFoundry(){
 	}
 }
 
-async function writeFoundry(){
+async function writeForge(){
 	try {
 		roha.model=grokModel;
 		await Deno.writeTextFile(rohaPath, JSON.stringify(roha, null, "\t"));
@@ -650,7 +650,7 @@ async function resetRoha(){
 //	roha.tags={};
 	if(roha.config.resetcounters) roha.counters={};
 	increment("resets");
-	await writeFoundry();
+	await writeForge();
 	resetHistory();
 	echo("resetRoha","All shares and history reset.");
 }
@@ -704,7 +704,7 @@ async function runDOS(args) {
 	if(!roha.config.disorder) return;
 	const shell = Deno.build.os === "windows" ? "cmd" : "bash";
 	const cmd = [shell, ...args.slice(1)];
-	echo("runDos",Deno.build.os,shell,"Type exit to return to Foundry.");
+	echo("runDos",Deno.build.os,shell,"Type exit to return to Forge.");
 	await flush();
 	const oldRaw = Deno.stdin.isRaw;
 	Deno.stdin.setRaw(false);
@@ -712,7 +712,7 @@ async function runDOS(args) {
 	await p.status();
 	p.close();
 	Deno.stdin.setRaw(oldRaw);
-	echo("Returned to Foundry");
+	echo("Returned to Forge");
 }
 
 async function runDeno(path, cwd) {
@@ -769,7 +769,7 @@ const writer = Deno.stdout.writable.getWriter();
 
 let promptBuffer = new Uint8Array(0);
 
-async function promptFoundry(message) {
+async function promptForge(message) {
 	if(!roha.config.rawPrompt) return prompt(message);
 	let result = "";
 	if (message) {
@@ -791,7 +791,7 @@ async function promptFoundry(message) {
 					}
 				} else if (byte === 0x1b) { // Escape sequence
 					if (value.length === 1) {
-						await exitFoundry();
+						await exitForge();
 						Deno.exit(0);
 					}
 					if (value.length === 3) {
@@ -827,7 +827,7 @@ async function promptFoundry(message) {
 }
 
 // a work in progess file watcher
-// callers to addShare expected to await writeFoundry after
+// callers to addShare expected to await writeForge after
 
 const eventList=[];
 
@@ -872,7 +872,7 @@ async function shareDir(dir, tag) {
 				continue;
 			}
 		}
-		await writeFoundry();
+		await writeForge();
 		echo("Shared",paths.length,"files from",dir,"with tag",tag);
 	} catch (error) {
 		echo("shareDir error",String(error)); //.message
@@ -1013,7 +1013,7 @@ async function commitShares(tag) {
 	}
 	if (removedPaths.length) {
 		roha.sharedFiles = validShares;
-		await writeFoundry();
+		await writeForge();
 		echo("Removed invalid shares:", removedPaths.join(" "));
 	}
 	if (dirty && tag) {
@@ -1031,7 +1031,7 @@ async function setTag(name,note){
 	tag.info.push(note);
 	tags[name]=tag;
 	roha.tags=tags;
-	await writeFoundry();
+	await writeForge();
 //	let invoke=`New tag "${name}" added. Describe all shares with this tag.`;
 //	rohaHistory.push({role:"system",content:invoke});
 }
@@ -1089,7 +1089,7 @@ async function creditAccount(credit,account){
 		const delta=(current-amount).toFixed(2);
 		echo("creditAccount",price(amount),account,"balance",price(lode.credit),"delta",delta);
 	}
-	await writeFoundry();
+	await writeForge();
 }
 
 async function onAccount(args){
@@ -1123,7 +1123,7 @@ async function onAccount(args){
 
 async function showHelp() {
 	try {
-		const md = await Deno.readTextFile("foundry.md");
+		const md = await Deno.readTextFile("forge.md");
 		echo(mdToAnsi(md));
 	} catch (e) {
 		echo("showHelp error",e.message);
@@ -1174,7 +1174,7 @@ async function callCommand(command) {
 					if(flag in flagNames){
 						roha.config[flag]=!roha.config[flag];
 						echo(flag+" - "+flagNames[flag]+" is "+(roha.config[flag]?"true":"false"));
-						await writeFoundry();
+						await writeForge();
 					}
 				}else{
 					let count=0;
@@ -1215,7 +1215,7 @@ async function callCommand(command) {
 					const note=words.slice(1).join(" ");
 					if(note.length){
 						mut.notes.push(note);
-						await writeFoundry();
+						await writeForge();
 					}else{
 						const n=mut.notes.length;
 						for(let i=0;i<n;i++){
@@ -1278,7 +1278,7 @@ async function callCommand(command) {
 				break;
 			case "drop":
 				dropShares();
-				await writeFoundry();
+				await writeForge();
 				break;
 			case "share":
 				if (words.length==1){
@@ -1287,7 +1287,7 @@ async function callCommand(command) {
 					const filename = words.slice(1).join(" ");
 					const path = resolvePath(Deno.cwd(), filename);
 					const info = await Deno.stat(path);
-					const tag = "";//await promptFoundry("Enter tag name (optional):");
+					const tag = "";//await promptForge("Enter tag name (optional):");
 					if(info.isDirectory){
 						echo("Share directory path:",path);
 						await shareDir(path,tag);
@@ -1299,7 +1299,7 @@ async function callCommand(command) {
 						echo("hash:",hash);
 						await addShare({path,size,modified,hash,tag});
 					}
-					await writeFoundry();
+					await writeForge();
 				}
 				break;
 			case "push":
@@ -1371,7 +1371,7 @@ async function onCall(toolCall) {
 						annotateShare(name,description);
 						break;
 				}
-				await writeFoundry(); // Persist changes
+				await writeForge(); // Persist changes
 				return { success: true, updated: 1 };
 			} catch (error) {
 				echo("annotate_forge error:",error);
@@ -1499,7 +1499,7 @@ async function relay() {
 						echo(summary);
 					}
 				}
-				await writeFoundry();
+				await writeForge();
 			}else{
 				if(roha.config.verbose){
 					echo("modelRates not found for",grokModel);
@@ -1509,7 +1509,7 @@ async function relay() {
 			mut.completion_tokens=(mut.completion_tokens|0)+spent[1];
 			if(usetools && mut.hasForge!==true){
 				mut.hasForge=true;
-				await writeFoundry();
+				await writeForge();
 			}
 		}
 
@@ -1576,7 +1576,7 @@ async function relay() {
 				if(grokModel in roha.mut) {
 					echo("mut",grokModel,"noFunctions",true);
 					roha.mut[grokModel].noFunctions=true;
-					await writeFoundry();
+					await writeForge();
 				}
 				echo("resetting grokFunctions")
 				grokFunctions=false;
@@ -1599,7 +1599,7 @@ async function chat() {
 			await flush();
 			let line="";
 			if(listCommand){
-				line=await promptFoundry("#");
+				line=await promptForge("#");
 				if(line && line.length && !isNaN(line)){
 					let index=line|0;
 					await callCommand(listCommand+" "+index);
@@ -1607,14 +1607,14 @@ async function chat() {
 				listCommand="";
 				continue;
 			}else if(creditCommand){
-				line=await promptFoundry("$");
+				line=await promptForge("$");
 				if(line&&line.length && !isNaN(line)){
 					await creditCommand(line);
 				}
 				creditCommand="";
 				continue;
 			}else{
-				line=await promptFoundry(lines.length?"+":rohaPrompt);
+				line=await promptForge(lines.length?"+":rohaPrompt);
 			}
 			if (line === "") {
 				if(roha.config.returntopush && !lines.length) {
@@ -1651,7 +1651,7 @@ async function chat() {
 	}
 }
 
-// foundry uses rohaPath to boot
+// forge uses rohaPath to boot
 
 const fileExists = await pathExists(rohaPath);
 
@@ -1660,12 +1660,12 @@ if (!fileExists) {
 	echo("Created new",rohaPath);
 }
 
-// foundry lists models from active accounts
+// forge lists models from active accounts
 
 echo(rohaTitle,"running from "+rohaPath);
 
 await flush();
-await readFoundry();
+await readForge();
 const rohaEndpoint={};
 for(let account in modelAccounts){
 	let endpoint = await connectAccount(account);
@@ -1677,7 +1677,7 @@ for(let account in modelAccounts){
 	}
 }
 
-// foundry starts
+// forge starts here
 
 await flush();
 let grokModel = roha.model||"deepseek-chat@deepseek";
@@ -1695,7 +1695,7 @@ if(sessions==0||roha.config.showWelcome){
 	let welcome=await Deno.readTextFile("welcome.txt");
 	echo(welcome);
 	await flush();
-	await writeFoundry();
+	await writeForge();
 }
 
 if(roha.config){
@@ -1719,9 +1719,9 @@ Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.ex
 try {
 	await chat();
 } catch (error) {
-	console.error("Foundry crashed:", error);
-	await exitFoundry();
+	console.error("Forge crashed, darn, this release should be stable:", error);
+	await exitForge();
 	Deno.exit(1);
 }
 
-exitFoundry();
+exitForge();
