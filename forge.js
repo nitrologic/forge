@@ -11,7 +11,7 @@
 //
 // or install deno and run from source https://deno.com/
 //
-// deno run --allow-run --allow-env --allow-net --allow-read --allow-write roha.js
+// deno run --allow-run --allow-env --allow-net --allow-read --allow-write forge.js
 
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
@@ -44,7 +44,6 @@ const flagNames={
 	commitonstart : "commit shared files on start",
 	saveonexit : " save conversation history on exit",
 	ansi : "markdown ANSI rendering",
-	slow : "output at reading speed",
 	verbose : "emit debug information",
 	broken : "ansi background blocks",
 	logging : "log all output to file",
@@ -55,7 +54,8 @@ const flagNames={
 	disorder : "allow /dos command to run shell",
 	resetcounters : "factory reset when reset",
 	versioning : "allow multiple versions in share history",
-	returntopush : "hit return to /push - under test"
+	returntopush : "hit return to /push - under test",
+	slow : "experimental output at reading speed"
 };
 
 const emptyRoha={
