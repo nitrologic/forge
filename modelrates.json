@@ -1,13 +1,23 @@
 {
-	"gpt-4.1-nano-2025-04-14@openai":{
-		"pricing":[0.10,0.025,0.40],
-		"purpose":"nano nano",
-		"preview":"Ex"
+	"models/gemini-2.5-pro-preview-03-25@gemini":{
+		"pricing":[1.25,10.0],
+		"purpose":"Excels at coding and complex reasoning tasks",
+		"preview":"A state-of-the-art multipurpose model"
+	},
+	"models/gemini-2.0-flash@gemini":{
+		"pricing":[0.10,0.40],
+		"purpose":"High-performance multimodal model optimized for agent-based applications.",
+		"preview":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents."
 	},
 	"gpt-4.5-preview-2025-02-27@openai":{
 		"pricing":[75.00,37.50,150.00],
 		"purpose":"burn money",
-		"preview":"Ex"
+		"preview":""
+	},
+	"gpt-4.1-nano-2025-04-14@openai":{
+		"pricing":[0.10,0.025,0.40],
+		"purpose":"nano nano",
+		"preview":"faster than a fast thing"
 	},
 	"o4-mini-2025-04-16@openai":{
 		"pricing":[1.10,0.275,4.40],
@@ -19,15 +29,15 @@
 		"purpose": "General conversation and text generation",
 		"preview": "Cost-effective model for versatile tasks, trained on massive text datasets."
 	},
-	"grok-3-mini-fast-beta@xai": {
-		"pricing": [0.30, 0.50],
-		"purpose": "Fast text generation",
-		"preview": "Lightweight, high-speed model for basic reasoning and cost-efficient applications."
-	},
 	"deepseek-reasoner@deepseek": {
 		"pricing": [0.55, 2.19],
 		"purpose": "Advanced reasoning and problem-solving",
 		"preview": "High-performance model for complex math, coding, and logical tasks."
+	},
+	"grok-3-mini-fast-beta@xai": {
+		"pricing": [0.30, 0.50],
+		"purpose": "Fast text generation",
+		"preview": "Lightweight, high-speed model for basic reasoning and cost-efficient applications."
 	},
 	"grok-3-beta@xai": {
 		"pricing": [3.00, 15.00],

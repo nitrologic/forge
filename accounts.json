@@ -4,23 +4,25 @@
 		"env":"DEEPSEEK_API_KEY",
 		"url":"https://api.deepseek.com"
 	},
-	"anthropic":{
-		"currency": "USD",
-		"env": "ANTHROPIC_API_KEY",
-		"url": "https://api.anthropic.com/v1"
-	},
 	"xai": {
 		"currency": "USD",
 		"env": "XAI_API_KEY",
 		"url": "https://api.x.ai/v1"
 	},
+	"openai": {
+		"currency": "USD",
+		"env": "OPENAI_API_KEY",
+		"url": "https://api.openai.com/v1"
+	},
 	"gemini":{
+		"currency": "USD",
 		"env":"GEMINI_API_KEY",
 		"url":"https://generativelanguage.googleapis.com/v1beta/openai"
 	},
-	"openai": {
-		"env": "OPENAI_API_KEY",
-		"url": "https://api.openai.com/v1"
+	"anthropic":{
+		"currency": "USD",
+		"env": "ANTHROPIC_API_KEY",
+		"url": "https://api.anthropic.com/v1",
+		"notOpenAI": true
 	}
 }
-
