@@ -12,7 +12,9 @@
 	"openai": {
 		"currency": "USD",
 		"env": "OPENAI_API_KEY",
-		"url": "https://api.openai.com/v1"
+		"url": "https://api.openai.com/v1",
+		"hasCache":true
+
 	},
 	"gemini":{
 		"currency": "USD",

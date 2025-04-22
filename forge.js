@@ -1467,11 +1467,14 @@ async function relay() {
 		let model=modelAccount[0];
 		let account=modelAccount[1];
 		let endpoint=rohaEndpoint[account];
+		const config=modelAccounts[account];
 		let usetools=grokFunctions&&roha.config.forge;
 		const now=performance.now();
 		// some toolless models may get snurty unless messages are squashed
-//		const cache_tokens=true;
-		const payload = usetools?{ model, messages:rohaHistory, tools: rohaTools }:{ model, messages:squashMessages(rohaHistory) };
+
+		let payload = usetools?{ model, messages:rohaHistory, tools: rohaTools }:{ model, messages:squashMessages(rohaHistory) };
+		if(config.hasCache) payload.cache_tokens=true;
+
 		const completion = await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
 		if (completion.model != model) {

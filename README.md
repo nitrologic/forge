@@ -1,5 +1,3 @@
-![foundry-rc2](media/foundry1.png)
-
 # nitrologic forge
 
 A research tool for advanced model manipulation.
@@ -27,7 +25,7 @@ exit
 
 # reference
 
-More command documentation [forge.md](foundry.md)
+More command documentation [forge.md](forge.md)
 
 Project roadmap [roadmap.md](roadmap.md)
 
