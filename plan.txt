@@ -1,0 +1,3 @@
+- upgrade to non blocking fs usage
+- flesh out skeleton process handling
+- spend more time with o4 mini

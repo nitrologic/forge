@@ -425,7 +425,9 @@ async function resetModel(name){
 	grokFunctions=true;
 	rohaHistory.push({role:"system",content:"Model changed to "+name+"."});
 	let rate=(name in modelRates)?modelRates[name].pricing||[0,0]:[0,0];
-	echo("model:",name,"tool",grokFunctions,"rates",rate[0].toFixed(2)+","+rate[1].toFixed(2));
+	let n=rate.length-1;
+	let bill=rate[0].toFixed(2)+","+rate[n].toFixed(2);
+	echo("model:",name,"tool",grokFunctions,"rates",bill);
 	await writeForge();
 }
 
@@ -895,7 +897,7 @@ const textExtensions = [
 async function shareFile(path,tag) {
 	let fileContent=null;
 	try {
-		const fileSize=fileLength(path);
+		const fileSize=await fileLength(path);
 		if(fileSize>MaxFileSize) throw(filesize);
 		fileContent = await Deno.readFile(path);
 	} catch (error) {
@@ -996,7 +998,7 @@ async function commitShares(tag) {
 			const modified = share.modified !== info.mtime.getTime();
 			const isShared = rohaShares.includes(share.path);
 			if (modified || !isShared) {
-				shareBlob(path,size,tag);
+				await shareBlob(path,size,tag);
 				count++;
 				share.modified = info.mtime.getTime();
 				dirty = true;
@@ -1467,6 +1469,8 @@ async function relay() {
 		let endpoint=rohaEndpoint[account];
 		let usetools=grokFunctions&&roha.config.forge;
 		const now=performance.now();
+		// some toolless models may get snurty unless messages are squashed
+//		const cache_tokens=true;
 		const payload = usetools?{ model, messages:rohaHistory, tools: rohaTools }:{ model, messages:squashMessages(rohaHistory) };
 		const completion = await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
@@ -1512,6 +1516,8 @@ async function relay() {
 				await writeForge();
 			}
 		}
+
+		if(usage.prompt_tokens_details) echo(JSON.stringify(usage.prompt_tokens_details));
 
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
 		if(spend) cost="$"+spend.toFixed(3);
@@ -1571,6 +1577,7 @@ async function relay() {
 			echo(cleanupRequired);
 			return;
 		}
+		//unhandled error line: 400 Unrecognized request argument supplied: cache_tokens
 		if(grokFunctions){
 			if(line.includes("does not support Function Calling")){
 				if(grokModel in roha.mut) {

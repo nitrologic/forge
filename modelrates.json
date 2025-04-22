@@ -1,4 +1,19 @@
 {
+	"gpt-4.1-nano-2025-04-14@openai":{
+		"pricing":[0.10,0.025,0.40],
+		"purpose":"nano nano",
+		"preview":"Ex"
+	},
+	"gpt-4.5-preview-2025-02-27@openai":{
+		"pricing":[75.00,37.50,150.00],
+		"purpose":"burn money",
+		"preview":"Ex"
+	},
+	"o4-mini-2025-04-16@openai":{
+		"pricing":[1.10,0.275,4.40],
+		"purpose":"",
+		"preview":""
+	},
 	"deepseek-chat@deepseek": {
 		"pricing": [0.27, 1.10],
 		"purpose": "General conversation and text generation",
