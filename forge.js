@@ -1725,7 +1725,6 @@ Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.ex
 // await openWithDefaultApp("foundry.json");
 // await runCode("isolation/test.js","isolation");
 
-
 try {
 	await chat();
 } catch (error) {
