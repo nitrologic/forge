@@ -89,6 +89,16 @@ Annotate the model under test with notes and observations.
 
 ## experimental
 
+### /start
+
+Start a new forge session with it's own history stack.
+
+Keep the current history on the forge stack.
+
+### /finish
+
+Return to most recently pushed session.
+
 ### /dos
 
 Begin a session with host Operating System shell.

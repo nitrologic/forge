@@ -939,8 +939,8 @@ async function shareFile(path,tag) {
 
 async function shareBlob(path,size,tag){
 	const extension = path.split(".").pop();
-	const type = fileType(extension);
-	const metadata = JSON.stringify({ path: path, length: size, type, tag });
+	const mimeType = fileType(extension);
+	const metadata = JSON.stringify({ path:path,length:size,type:mimeType,tag });
 	rohaPush(metadata);
 	if (textExtensions.includes(extension)) {
 		const content = await Deno.readTextFile(path);
@@ -969,7 +969,7 @@ async function shareBlob(path,size,tag){
 			throw new Error(`Failed to encode file: ${error.message}`);
 		} finally {
 			reader.releaseLock();
-			file.close();
+//			file.close();
 		}
 	}
 }
@@ -1243,10 +1243,10 @@ async function callCommand(command) {
 					listCommand="model";
 				}
 				break;
-			case "run":
+			case "start":
 				await pushHistory();
 				break;
-			case "exit":
+			case "finish":
 				let ok=await popHistory();
 				if(!ok){
 					echo("trigger exit here");
