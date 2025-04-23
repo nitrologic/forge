@@ -1335,7 +1335,7 @@ async function callCommand(command) {
 				return false; // Command not recognized
 		}
 	} catch (error) {
-		echo("callCommand error", error.message);
+		echo("callCommand",command,error.message);
 	}
 	increment("calls");
 	return dirty;
@@ -1491,7 +1491,7 @@ async function relay() {
 		let endpoint=rohaEndpoint[account];
 		const useTools=grokFunctions&&roha.config.forge;
 		let payload={model};
-		// 1. some toolless models may get snurty unless messages are squashed
+		// some toolless models may get snurty unless messages are squashed
 		if(useTools){
 			payload.messages=rohaHistory;
 			payload.tools=rohaTools;
@@ -1499,6 +1499,8 @@ async function relay() {
 			payload.messages=squashMessages(rohaHistory);
 		}
 		payload.temperature = grokTemperature;
+//		const config=modelAccounts[account];
+//		if(config.hasCache) payload.cache_tokens=true;
 		const completion = await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
 		if (completion.model != model) {
@@ -1762,7 +1764,6 @@ Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.ex
 // debugstuff
 // await openWithDefaultApp("foundry.json");
 // await runCode("isolation/test.js","isolation");
-
 
 try {
 	await chat();
