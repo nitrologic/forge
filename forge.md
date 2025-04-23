@@ -81,11 +81,13 @@ Helps user view available files and folders to share.
 
 ## Model Under Test
 
-### /model
+### /model (all)
 
 Select an AI model.
 
 User can choose a model by name or index from the accounts available.
+
+Unless specified only models with tested rates are listed.
 
 ### /note
 

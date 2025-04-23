@@ -1,3 +1,4 @@
+- adventure mode with rooms
 - modify text shares perhaps gemini friendly
 - investigate temperature 
 - cacheLevel hasCache 3 tier price support

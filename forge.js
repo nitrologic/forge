@@ -158,7 +158,7 @@ let tagList=[];
 let shareList=[];
 let memberList=[];
 
-const emptyMUT = {notes:[],errors:[],}
+const emptyMUT = {notes:[],errors:[],relays:0,cost:0,elapsed:0}
 const emptyModel={name:"empty",account:"",hidden:false,prompts:0,completion:0}
 const emptyTag={}
 
@@ -1253,19 +1253,23 @@ async function callCommand(command) {
 				break;
 			case "model":
 				let name=words[1];
-				if(name){
+				if(name && name!="all"){
 					if(name.length&&!isNaN(name)) name=modelList[name|0];
 					if(modelList.includes(name)){
 						resetModel(name);
 					}
 				}else{
+					let all=name && name=="all";
 					for(let i=0;i<modelList.length;i++){
 						let name=modelList[i];
 						let attr=(name==grokModel)?"*":" ";
 						let mut=(name in roha.mut)?roha.mut[name]:emptyMUT;
 						let flag = (mut.hasForge) ? "𝆑" : "";
 						let notes=mut.notes.join(" ");
-						echo(i,attr,name,flag,mut.relays|0,notes);
+						let rated=name in modelRates;
+						if(rated || all){
+							echo(i,attr,name,flag,mut.relays|0,notes);
+						}
 					}
 					listCommand="model";
 				}
