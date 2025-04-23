@@ -18,11 +18,5 @@
 		"currency": "USD",
 		"env":"GEMINI_API_KEY",
 		"url":"https://generativelanguage.googleapis.com/v1beta/openai"
-	},
-	"anthropic":{
-		"currency": "USD",
-		"env": "ANTHROPIC_API_KEY",
-		"url": "https://api.anthropic.com/v1",
-		"notOpenAI": true
 	}
 }

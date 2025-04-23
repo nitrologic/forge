@@ -1,77 +1,79 @@
 {
-	"models/gemini-2.5-pro-preview-03-25@gemini":{
-		"pricing":[1.25,10.0],
-		"purpose":"Excels at coding and complex reasoning tasks",
-		"preview":"A state-of-the-art multipurpose model"
-	},
-	"models/gemini-2.0-flash@gemini":{
-		"pricing":[0.10,0.40],
-		"purpose":"High-performance multimodal model optimized for agent-based applications.",
-		"preview":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents."
-	},
-	"gpt-4.5-preview-2025-02-27@openai":{
-		"pricing":[75.00,37.50,150.00],
-		"purpose":"burn money",
-		"preview":""
-	},
 	"gpt-4.1-nano-2025-04-14@openai":{
 		"pricing":[0.10,0.025,0.40],
 		"purpose":"nano nano",
-		"preview":"faster than a fast thing"
+		"press":"faster than a fast thing",
+		"reality":"clueless ideation"
 	},
 	"o4-mini-2025-04-16@openai":{
 		"pricing":[1.10,0.275,4.40],
 		"purpose":"",
-		"preview":""
+		"press":""
+	},
+	"gpt-4.5-preview-2025-02-27@openai":{
+		"pricing":[75.00,37.50,150.00],
+		"purpose":"burn money",
+		"press":""
 	},
 	"deepseek-chat@deepseek": {
 		"pricing": [0.27, 1.10],
 		"purpose": "General conversation and text generation",
-		"preview": "Cost-effective model for versatile tasks, trained on massive text datasets."
+		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
 	},
 	"deepseek-reasoner@deepseek": {
 		"pricing": [0.55, 2.19],
 		"purpose": "Advanced reasoning and problem-solving",
-		"preview": "High-performance model for complex math, coding, and logical tasks."
+		"press": "High-performance model for complex math, coding, and logical tasks."
+	},
+	"models/gemini-2.5-pro-preview-03-25@gemini":{
+		"pricing":[1.25,10.0],
+		"purpose":"Excels at coding and complex reasoning tasks",
+		"press":"A state-of-the-art multipurpose model",
+		"reality":"A complete dunce"
+	},
+	"models/gemini-2.0-flash@gemini":{
+		"pricing":[0.10,0.40],
+		"purpose":"High-performance multimodal model optimized for agent-based applications.",
+		"press":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents."
 	},
 	"grok-3-mini-fast-beta@xai": {
 		"pricing": [0.30, 0.50],
 		"purpose": "Fast text generation",
-		"preview": "Lightweight, high-speed model for basic reasoning and cost-efficient applications."
+		"press": "Lightweight, high-speed model for basic reasoning and cost-efficient applications."
 	},
 	"grok-3-beta@xai": {
 		"pricing": [3.00, 15.00],
 		"purpose": "Text and code generation",
-		"preview": "Versatile model balancing performance and cost for diverse applications."
+		"press": "Versatile model balancing performance and cost for diverse applications."
 	},
 	"grok-2-1212@xai": {
 		"pricing": [5.00, 15.00],
 		"purpose": "Advanced reasoning and code generation",
-		"preview": "High-performance model for complex research tasks and multi-step workflows."
+		"press": "High-performance model for complex research tasks and multi-step workflows."
 	},
 	"grok-beta@xai": {
 		"pricing": [5.00, 15.00],
 		"purpose": "Text and code generation",
-		"preview": "Robust model with advanced reasoning and function-calling capabilities."
+		"press": "Robust model with advanced reasoning and function-calling capabilities."
 	},
 	"grok-2-image-1212@xai": {
 		"purpose": "Image-related tasks and text generation",
-		"preview": "Specialized model for creative image applications and textual outputs. Image pricing pending API fetch."
+		"press": "Specialized model for creative image applications and textual outputs. Image pricing pending API fetch."
 	},
 	"grok-2-vision-1212@xai": {
 		"purpose": "Image analysis and text generation",
-		"preview": "Multimodal model for visual data processing and textual insights. Image pricing pending API fetch."
+		"press": "Multimodal model for visual data processing and textual insights. Image pricing pending API fetch."
 	},
 	"grok-3-fast-beta@xai": {
 		"purpose": "Rapid text generation and reasoning",
-		"preview": "High-speed model for time-sensitive tasks and efficient processing."
+		"press": "High-speed model for time-sensitive tasks and efficient processing."
 	},
 	"grok-3-mini-beta@xai": {
 		"purpose": "Efficient text generation",
-		"preview": "Compact model for lightweight reasoning and cost-effective tasks."
+		"press": "Compact model for lightweight reasoning and cost-effective tasks."
 	},
 	"grok-vision-beta@xai": {
 		"purpose": "Image processing and text generation",
-		"preview": "Multimodal model for visual data analysis and text responses. Image pricing pending API fetch."
+		"press": "Multimodal model for visual data analysis and text responses. Image pricing pending API fetch."
 	}
 }

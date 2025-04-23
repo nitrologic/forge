@@ -29,10 +29,11 @@ const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const pageBreak="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# #+#+# #+#+# #+#+# #+#+# #+# #+#+# #+#";
 
 const appDir=Deno.cwd();
-const rohaPath=resolve(appDir,"forge.json");
 const accountsPath = resolve(appDir,"accounts.json");
 const ratesPath=resolve(appDir,"modelrates.json");
-const forgePath=resolve(appDir,"forge");
+
+const forgePath=resolve(appDir,"foundry");
+const rohaPath=resolve(forgePath,"forge.json");
 
 const modelAccounts = JSON.parse(await Deno.readTextFile(accountsPath));
 const modelRates = JSON.parse(await Deno.readTextFile(ratesPath));
@@ -156,7 +157,7 @@ let tagList=[];
 let shareList=[];
 let memberList=[];
 
-const emptyMUT = {notes:[],errors:[]}
+const emptyMUT = {notes:[],errors:[],}
 const emptyModel={name:"empty",account:"",hidden:false,prompts:0,completion:0}
 const emptyTag={}
 
@@ -206,7 +207,7 @@ function rohaPush(content,name="forge"){
 
 resetHistory();
 
-// roaTools
+// rohaTools
 
 const rohaTools = [{
 	type: "function",
@@ -242,7 +243,7 @@ const rohaTools = [{
 			type: "object",
 			properties: {
 				name: { type: "string" },
-				type: { type:"string" },
+				type: { type:"string" , description:"forge category", enum:["code", "tag", "share"]},
 				description: { type: "string" }
 			},
 			required: ["name","type","description"]
@@ -424,10 +425,13 @@ async function resetModel(name){
 	grokModel=name;
 	grokFunctions=true;
 	rohaHistory.push({role:"system",content:"Model changed to "+name+"."});
-	let rate=(name in modelRates)?modelRates[name].pricing||[0,0]:[0,0];
-	let n=rate.length-1;
-	let bill=rate[0].toFixed(2)+","+rate[n].toFixed(2);
-	echo("model:",name,"tool",grokFunctions,"rates",bill);
+	const info=(name in modelRates)?modelRates[name]:null;
+	let rate=info?info.pricing||[]:[];
+	let rates=[];
+	for(let i=0;i<rate.length;i++) rates.push(rate[i].toFixed(2));
+	echo("model:",name,"tool",grokFunctions,"rates",rates.join(","));
+	if(info.purpose)echo("purpose:",info.purpose);
+	if(info.preview)echo("preview:",info.preview);
 	await writeForge();
 }
 
@@ -647,6 +651,7 @@ async function writeForge(){
 }
 
 async function resetRoha(){
+	grokTemperature=0.8;
 	rohaShares = [];
 	roha.sharedFiles=[];
 //	roha.tags={};
@@ -884,6 +889,10 @@ async function shareDir(dir, tag) {
 
 function fileType(extension){
 	return contentType(extension) || "application/octet-stream";
+}
+
+function annotateCode(name,description){
+	echo("annotateCode",name,description);
 }
 
 const textExtensions = [
@@ -1142,6 +1151,15 @@ async function callCommand(command) {
 	let words = command.split(" ");
 	try {
 		switch (words[0]) {
+			case "temp":
+				if (words.length > 1) {
+					const newTemp = parseFloat(words[1]);
+					if (!isNaN(newTemp) && newTemp >= -5 && newTemp <= 50) {
+						grokTemperature = newTemp;
+					}
+				}
+				echo("Current model temperature is", grokTemperature);
+				break;
 			case "balance":
 				await getBalance(words);
 				break;
@@ -1366,6 +1384,9 @@ async function onCall(toolCall) {
 			try {
 				const { name, type, description } = JSON.parse(toolCall.function.arguments || "{}");
 				switch(type){
+					case "code":
+						annotateCode(name,description);
+						break;
 					case "tag":
 						annotateTag(name,description);
 						break;
@@ -1463,15 +1484,21 @@ async function processToolCalls(calls) {
 async function relay() {
 	const verbose=roha.config.verbose;
 	try {
+		const now=performance.now();
 		const modelAccount=grokModel.split("@");
 		let model=modelAccount[0];
 		let account=modelAccount[1];
 		let endpoint=rohaEndpoint[account];
-		let usetools=grokFunctions&&roha.config.forge;
-		const now=performance.now();
-		// some toolless models may get snurty unless messages are squashed
-//		const cache_tokens=true;
-		const payload = usetools?{ model, messages:rohaHistory, tools: rohaTools }:{ model, messages:squashMessages(rohaHistory) };
+		const useTools=grokFunctions&&roha.config.forge;
+		let payload={model};
+		// 1. some toolless models may get snurty unless messages are squashed
+		if(useTools){
+			payload.messages=rohaHistory;
+			payload.tools=rohaTools;
+		}else{
+			payload.messages=squashMessages(rohaHistory);
+		}
+		payload.temperature = grokTemperature;
 		const completion = await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
 		if (completion.model != model) {
@@ -1493,7 +1520,17 @@ async function relay() {
 			mut.elapsed = (mut.elapsed || 0) + elapsed;
 			if(grokModel in modelRates){
 				let rate=modelRates[grokModel].pricing||[0,0];
-				spend=spent[0]*rate[0]/1e6+spent[1]*rate[1]/1e6;
+				const tokenRate=rate[0];
+				const outputRate=rate[rate.length-1];
+				// a controversial take on billing, nano thinks I'm a dick
+				if(rate.length==3){
+					const cacheRate=rate[1];
+					const cached=usage.prompt_tokens_details.cached_tokens||0;
+					spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6+cached*cacheRate/1e6;
+
+				}else{
+					spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6;
+				}
 				mut.cost+=spend;
 				let lode = roha.lode[account];
 				if(lode && typeof lode.credit === "number") {
@@ -1511,17 +1548,19 @@ async function relay() {
 			}
 			mut.prompt_tokens=(mut.prompt_tokens|0)+spent[0];
 			mut.completion_tokens=(mut.completion_tokens|0)+spent[1];
-			if(usetools && mut.hasForge!==true){
+			if(useTools && mut.hasForge!==true){
 				mut.hasForge=true;
 				await writeForge();
 			}
 		}
 
 		if(usage.prompt_tokens_details) echo(JSON.stringify(usage.prompt_tokens_details));
+//		if(usage.prompt_tokens_details) echo(JSON.stringify(usage));
 
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
 		if(spend) cost="$"+spend.toFixed(3);
-		let modelSpec=[grokModel,cost,size,elapsed.toFixed(2)+"s"];
+		let temp=grokTemperature+"°";
+		let modelSpec=[grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
 		let status = "["+modelSpec.join(" ")+"]";
 		echo(status);
 		var reply = "<blank>";
@@ -1590,6 +1629,7 @@ async function relay() {
 				return;
 			}
 		}
+		// tooling 1 unhandled error line: 400 status code (no body) 
 		echo("unhandled error line:", line);
 		if(verbose){
 			echo(String(error));
@@ -1684,12 +1724,13 @@ for(let account in modelAccounts){
 	}
 }
 
-// forge starts here
+// forge starts here, grok started this thing, blame grok
 
 await flush();
 let grokModel = roha.model||"deepseek-chat@deepseek";
 let grokFunctions=true;
 let grokUsage = 0;
+let grokTemperature = 0.8;
 
 echo("present [",grokModel,"]");
 echo("shares",roha.sharedFiles.length)

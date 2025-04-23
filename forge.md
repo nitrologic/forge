@@ -29,6 +29,12 @@ Default values are typically:
 * 11 disorder : allow /dos command to run shell : false
 * 12 versioning : allow multiple versions in share history : false
 
+### /temp
+
+Set or show the prompt temperature.
+
+An entropy control, use lower values for focus, higher for creativity.
+
 ### /share
 
 Share a file or folder with optional tag.
