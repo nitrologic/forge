@@ -1058,10 +1058,15 @@ function listTags(){
 	let tags=roha.tags||{};
 	let keys=Object.keys(tags);
 	let list=[];
-	for(let i=0;i<keys.length;i++){
+	let n=keys.length||0;
+	for(let i=0;i<n;i++){
 		let tag=tags[keys[i]];
 		const name=tag.name||"?????";
-		echo(i,name,"("+tag.info.length+")");
+		if(tag.info){
+			echo(i,name,"("+tag.info.length+")");
+		}else{
+			echo(i,name);
+		}
 		let info=tag.description;
 		if(info) echo("",info);
 		list.push(name);
