@@ -1,2 +1,2 @@
-git tag -a rc2
-zip -r rc2.zip rc2  
+git tag -a rc3
+zip -r rc3.zip rc3 

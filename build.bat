@@ -1,9 +1,9 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set DIR=rc2
+set DIR=rc3
 set COMPILE_ARGS=--allow-run --allow-env --allow-net --allow-read --allow-write
-set CORE=README.md LICENSE.txt forge.md welcome.txt accounts.json modelrates.json
+set CORE=README.md LICENSE forge.md welcome.txt accounts.json modelrates.json
 set EXTRAS=isolation\readme.txt isolation\test.js foundry\notice.txt
 set DEPENDENCIES=%CORE% %EXTRAS%
 
