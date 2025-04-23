@@ -3,17 +3,17 @@
 		"pricing":[0.10,0.025,0.40],
 		"purpose":"nano nano",
 		"press":"faster than a fast thing",
-		"reality":"clueless ideation"
+		"reality":"suffers from clueless ideation"
 	},
 	"o4-mini-2025-04-16@openai":{
 		"pricing":[1.10,0.275,4.40],
-		"purpose":"",
-		"press":""
+		"purpose":"optimized for fast, cost-efficient reasoning",
+		"press":"remarkable performance for its size and cost, particularly in math, coding, and visual tasks",
+		"reality":"a real unit, literally no warmth, single temp"
 	},
 	"gpt-4.5-preview-2025-02-27@openai":{
 		"pricing":[75.00,37.50,150.00],
-		"purpose":"burn money",
-		"press":""
+		"purpose":"burn money"
 	},
 	"deepseek-chat@deepseek": {
 		"pricing": [0.27, 0.07, 1.10],

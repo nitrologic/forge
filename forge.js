@@ -42,6 +42,7 @@ const decoder = new TextDecoder("utf-8");
 const encoder = new TextEncoder();
 
 const flagNames={
+	tools : "enable model tool interface",
 	commitonstart : "commit shared files on start",
 	saveonexit : " save conversation history on exit",
 	ansi : "markdown ANSI rendering",
@@ -50,7 +51,6 @@ const flagNames={
 	logging : "log all output to file",
 	debugging : "temporary switch for emitting debug information",
 	pushonshare : "emit a /push after any /share",
-	forge : "enable model tool interface",
 	rawPrompt : "experimental rawmode stdin deno prompt replacement",
 	disorder : "allow /dos command to run shell",
 	resetcounters : "factory reset when reset",
@@ -61,6 +61,7 @@ const flagNames={
 
 const emptyRoha={
 	config:{
+		tools:true,
 		showWelcome:false,
 		commitonstart:true,
 		saveonexit:false,
@@ -431,7 +432,8 @@ async function resetModel(name){
 	for(let i=0;i<rate.length;i++) rates.push(rate[i].toFixed(2));
 	echo("model:",name,"tool",grokFunctions,"rates",rates.join(","));
 	if(info.purpose)echo("purpose:",info.purpose);
-	if(info.preview)echo("preview:",info.preview);
+	if(info.press)echo("press:",info.press);
+	if(info.reality)echo("reality:",info.reality);
 	await writeForge();
 }
 
@@ -1494,7 +1496,7 @@ async function relay() {
 		let model=modelAccount[0];
 		let account=modelAccount[1];
 		let endpoint=rohaEndpoint[account];
-		const useTools=grokFunctions&&roha.config.forge;
+		const useTools=grokFunctions&&roha.config.tools;
 		let payload={model};
 		// some toolless models may get snurty unless messages are squashed
 		if(useTools){
@@ -1566,7 +1568,7 @@ async function relay() {
 
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
 		if(spend) cost="$"+spend.toFixed(3);
-		let temp=grokTemperature+"°";
+		let temp=grokTemperature.toFixed(1)+"°";
 		let modelSpec=[grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
 		let status = "["+modelSpec.join(" ")+"]";
 		echo(status);
@@ -1636,7 +1638,8 @@ async function relay() {
 				return;
 			}
 		}
-		// tooling 1 unhandled error line: 400 status code (no body) 
+		//Unsupported value: 'temperature' does not support 0.8 with this model.
+		// tooling 1 unhandled error line: 400 status code (no body)
 		echo("unhandled error line:", line);
 		if(verbose){
 			echo(String(error));
@@ -1737,7 +1740,7 @@ await flush();
 let grokModel = roha.model||"deepseek-chat@deepseek";
 let grokFunctions=true;
 let grokUsage = 0;
-let grokTemperature = 0.8;
+let grokTemperature = 1.0;
 
 echo("present [",grokModel,"]");
 echo("shares",roha.sharedFiles.length)
@@ -1768,7 +1771,8 @@ Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.ex
 
 // debugstuff
 // await openWithDefaultApp("foundry.json");
-// await runCode("isolation/test.js","isolation");
+
+await runCode("isolation/test.js","isolation");
 
 try {
 	await chat();
