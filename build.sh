@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DIR="rc2"
-DEPENDENCIES=("README.md" "LICENSE.txt" "CHANGELOG.md" "forge.md" "welcome.txt" "accounts.json" "modelrates.json" "forge/readme.txt" "isolation/readme.txt" "isolation/test.js")
+DIR="forge-rc3"
+DEPENDENCIES=("README.md" "LICENSE.txt" "CHANGELOG.md" "forge.md" "welcome.txt" "accounts.json" "modelrates.json" "foundry/notice.txt" "isolation/readme.txt" "isolation/test.js")
 
 deno cache forge.js
 if [ $? -ne 0 ]; then
