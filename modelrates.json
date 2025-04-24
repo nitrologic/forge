@@ -1,8 +1,8 @@
 {
 	"gpt-4.1-nano-2025-04-14@openai":{
 		"pricing":[0.10,0.025,0.40],
-		"purpose":"nano nano",
-		"press":"faster than a fast thing",
+		"purpose":"nano nano - faster than a fast thing",
+		"press":"supporting up to 1 million tokens of context",
 		"reality":"suffers from clueless ideation"
 	},
 	"o4-mini-2025-04-16@openai":{

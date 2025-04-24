@@ -13,7 +13,7 @@ Requires an api environment variable, see accounts.json for latest
 
 # commands
 
-/model [id]
+/model [id] [all]
 
 /share [folder]
 
