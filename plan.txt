@@ -1,8 +1,4 @@
+- modelRates -> modelInfo
 - adventure mode with rooms
-- modify text shares perhaps gemini friendly
-- investigate temperature 
-- cacheLevel hasCache 3 tier price support
 - upgrade to non blocking fs usage
-- flesh out skeleton process handling, run dos run
-- spend more time with o4 mini
-- chat with gemini 2.5 pro more often
+- fork experimental branch and rescue stuff.txt

@@ -391,10 +391,7 @@ async function specModel(model,account){
 	roha.mut[name]=info;
 }
 
-async function resetModel(name){
-	grokModel=name;
-	grokFunctions=true;
-	rohaHistory.push({role:"system",content:"Model changed to "+name+"."});
+async function aboutModel(name){
 	const info=(name in modelRates)?modelRates[name]:null;
 	let rate=info?info.pricing||[]:[];
 	let rates=[];
@@ -406,6 +403,13 @@ async function resetModel(name){
 		if(info.reality)echo("reality:",info.reality);
 	}
 	await writeForge();
+}
+
+async function resetModel(name){
+	grokModel=name;
+	grokFunctions=true;
+	rohaHistory.push({role:"system",content:"Model changed to "+name+"."});
+	await aboutModel(name);
 }
 
 function dropShares(){
@@ -623,7 +627,7 @@ async function writeForge(){
 }
 
 async function resetRoha(){
-	grokTemperature=0.8;
+	grokTemperature=1.0;
 	rohaShares = [];
 	roha.sharedFiles=[];
 //	roha.tags={};
@@ -1105,6 +1109,16 @@ async function callCommand(command) {
 					}
 				}
 				break;
+			case "dump":
+				for(let i=0;i<modelList.length;i++){
+					let name=modelList[i];
+					if(name in modelRates){
+						echo(name);
+						aboutModel(name);
+						echo(".");
+					}
+				}
+				break;
 			case "model":
 				let name=words[1];
 				if(name && name!="all"){
@@ -1345,8 +1359,12 @@ async function relay() {
 		}else{
 			payload.messages=squashMessages(rohaHistory);
 		}
-		payload.temperature = grokTemperature;
-//		const config=modelAccounts[account];
+		// check stone flag before enabling temperature
+		const info=(grokModel in modelRates)?modelRates[grokModel]:null;
+		if(info && !info.stone){
+			echo("not stoned",grokTemperature);
+			payload.temperature = grokTemperature;
+		}
 //		if(config.hasCache) payload.cache_tokens=true;
 		const completion = await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
@@ -1526,6 +1544,7 @@ async function chat() {
 				echo("Ending the conversation...");
 				break dance;
 			}
+			
 			if (line.startsWith("/")) {
 				const command = line.substring(1).trim();
 				let dirty=await callCommand(command);

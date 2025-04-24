@@ -89,6 +89,10 @@ User can choose a model by name or index from the accounts available.
 
 Unless specified only models with tested rates are listed.
 
+### /dump
+
+A review of models, prices and information.
+
 ### /note
 
 Attach a note to the current model under test.
