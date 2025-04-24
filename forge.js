@@ -1120,9 +1120,10 @@ async function callCommand(command) {
 						let mut=(name in roha.mut)?roha.mut[name]:emptyMUT;
 						let flag = (mut.hasForge) ? "𝆑" : "";
 						let notes=mut.notes.join(" ");
-						let rated=name in modelRates;
+						let rated=name in modelRates?modelRates[name]:null;
 						if(rated || all){
-							echo(i,attr,name,flag,mut.relays|0,notes);
+							let pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
+							echo(i,attr,name,flag,mut.relays|0,notes,pricing);
 						}
 					}
 					listCommand="model";
