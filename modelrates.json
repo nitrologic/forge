@@ -1,4 +1,9 @@
 {
+	"gpt-4.1-2025-04-14@openai":{
+		"pricing":[2.00,0.50,8.00],
+		"purpose":"Smartest model for complex tasks,",
+		"press":"GPT models for everyday tasks"
+	},
 	"gpt-4.1-nano-2025-04-14@openai":{
 		"pricing":[0.10,0.025,0.40],
 		"purpose":"nano nano - faster than a fast thing",
@@ -29,22 +34,34 @@
 		"pricing":[1.25,10.0],
 		"purpose":"Excels at coding and complex reasoning tasks",
 		"press":"A state-of-the-art multipurpose model",
-		"reality":"A complete dunce"
+		"reality":"Not cheap, and often a complete dunce."
 	},
 	"models/gemini-2.0-flash@gemini":{
 		"pricing":[0.10,0.40],
 		"purpose":"High-performance multimodal model optimized for agent-based applications.",
-		"press":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents."
+		"press":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents.",
+		"reality":"A tendency to regurgitate Mr Creosote style."
 	},
 	"grok-3-mini-fast-beta@xai": {
-		"pricing": [0.30, 0.50],
+		"pricing": [0.60, 4.00],
 		"purpose": "Fast text generation",
 		"press": "Lightweight, high-speed model for basic reasoning and cost-efficient applications."
+	},
+	"grok-3-mini-beta@xai": {
+		"pricing": [0.30, 0.50],
+		"purpose": "Efficient text generation",
+		"press": "Compact model for lightweight reasoning and cost-effective tasks.",
+		"reality": "128K token limit for nice and cheap, same positive vibe as big brother"
 	},
 	"grok-3-beta@xai": {
 		"pricing": [3.00, 15.00],
 		"purpose": "Text and code generation",
 		"press": "Versatile model balancing performance and cost for diverse applications."
+	},
+	"grok-3-fast-beta@xai": {
+		"pricing": [5.00, 25.00],
+		"purpose": "Rapid text generation and reasoning",
+		"press": "High-speed model for time-sensitive tasks and efficient processing."
 	},
 	"grok-2-1212@xai": {
 		"pricing": [5.00, 15.00],
@@ -55,25 +72,5 @@
 		"pricing": [5.00, 15.00],
 		"purpose": "Text and code generation",
 		"press": "Robust model with advanced reasoning and function-calling capabilities."
-	},
-	"grok-2-image-1212@xai": {
-		"purpose": "Image-related tasks and text generation",
-		"press": "Specialized model for creative image applications and textual outputs. Image pricing pending API fetch."
-	},
-	"grok-2-vision-1212@xai": {
-		"purpose": "Image analysis and text generation",
-		"press": "Multimodal model for visual data processing and textual insights. Image pricing pending API fetch."
-	},
-	"grok-3-fast-beta@xai": {
-		"purpose": "Rapid text generation and reasoning",
-		"press": "High-speed model for time-sensitive tasks and efficient processing."
-	},
-	"grok-3-mini-beta@xai": {
-		"purpose": "Efficient text generation",
-		"press": "Compact model for lightweight reasoning and cost-effective tasks."
-	},
-	"grok-vision-beta@xai": {
-		"purpose": "Image processing and text generation",
-		"press": "Multimodal model for visual data analysis and text responses. Image pricing pending API fetch."
 	}
 }

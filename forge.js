@@ -2,17 +2,6 @@
 // a research client for models
 // (c)2025 Simon Armstrong
 
-// linter is on, constification continues
-// avoid raw ansi in function code
-
-// binaries are available on github
-//
-// https://github.com/nitrologic/forge/releases
-//
-// or install deno and run from source https://deno.com/
-//
-// deno run --allow-run --allow-env --allow-net --allow-read --allow-write forge.js
-
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.67.2/mod.ts";
@@ -52,7 +41,6 @@ const flagNames={
 	debugging : "temporary switch for emitting debug information",
 	pushonshare : "emit a /push after any /share",
 	rawPrompt : "experimental rawmode stdin deno prompt replacement",
-	disorder : "allow /dos command to run shell",
 	resetcounters : "factory reset when reset",
 	versioning : "allow multiple versions in share history",
 	returntopush : "hit return to /push - under test",
@@ -74,7 +62,6 @@ const emptyRoha={
 		returntopush:false
 	},
 	tags:{},
-	band:{},
 	sharedFiles:[],
 	saves:[],
 	counters:{},
@@ -100,24 +87,6 @@ async function exitForge(){
 function price(credit){
 	if (credit === null || isNaN(credit)) return "$0";
 	return "$"+credit.toFixed(4);
-}
-
-function addBand(){
-	const id="member"+increment("members");
-	roha.band[id]={};
-}
-
-function listBand(){
-	const band=[];
-	for(let id in roha.band){
-		const member=roha.band[id];
-		band.push(member);
-	}
-	band.push("add");
-	for(let i=0;i<band.length;i++){
-		echo(i,band[i]);
-	}
-	memberList=band;
 }
 
 function annotateTag(name,description){
@@ -431,9 +400,11 @@ async function resetModel(name){
 	let rates=[];
 	for(let i=0;i<rate.length;i++) rates.push(rate[i].toFixed(2));
 	echo("model:",name,"tool",grokFunctions,"rates",rates.join(","));
-	if(info.purpose)echo("purpose:",info.purpose);
-	if(info.press)echo("press:",info.press);
-	if(info.reality)echo("reality:",info.reality);
+	if(info){
+		if(info.purpose)echo("purpose:",info.purpose);
+		if(info.press)echo("press:",info.press);
+		if(info.reality)echo("reality:",info.reality);
+	}
 	await writeForge();
 }
 
@@ -633,7 +604,6 @@ async function readForge(){
 		roha = JSON.parse(fileContent);
 		if(!roha.saves) roha.saves=[];
 		if(!roha.counters) roha.counters={};
-		if(!roha.band) roha.band={};
 		if(!roha.mut) roha.mut={};
 		if(!roha.forge) roha.forge=[];
 		if(!roha.lode) roha.lode={};
@@ -668,104 +638,6 @@ function resolvePath(dir,filename){
 	let path=resolve(dir,filename);
 	path = path.replace(/\\/g, "/");
 	return path;
-}
-
-// multi process model under test prompt replacement
-
-async function pipe(stream, tag) {
-	const raw = new Uint8Array(1024);
-	let buffer="";
-	while (true) {
-		const n = await stream.read(raw);
-		if (n === null) break;
-		buffer+=decoder.decode(raw.subarray(0,n));
-		echo("[" + tag + "]",buffer.trimEnd());
-		buffer="";
-		await flush();
-	}
-}
-
-async function getBalance(words){
-	const account=(words.length > 1)?words[1]:grokModel.split("@")[1];
-	const config = modelAccounts[account];
-	if (!config) {
-		echo(`Account ${account} not found`);
-		return;
-	}
-	const apiKey = Deno.env.get(config.env);
-	if(!apiKey){
-		echo(`Account ${account} key not found`);
-		return;
-	}
-	try {
-		const response = await fetch(config.url+"/organization/credits", {
-			headers: { "Authorization": `Bearer ${apiKey}` }
-		});
-		const data = await response.text();
-		echo(data);
-//		echo(`Balance for ${account}: $${data.available_credits} ${data.currency}`);
-	} catch (error) {
-		echo(`Error retrieving balance: ${error.message}`);
-	}
-}
-
-async function runDOS(args) {
-	if(!roha.config.disorder) return;
-	const shell = Deno.build.os === "windows" ? "cmd" : "bash";
-	const cmd = [shell, ...args.slice(1)];
-	echo("runDos",Deno.build.os,shell,"Type exit to return to Forge.");
-	await flush();
-	const oldRaw = Deno.stdin.isRaw;
-	Deno.stdin.setRaw(false);
-	const p = Deno.run({cmd,stdin: "inherit",stdout: "inherit",stderr: "inherit"});
-	await p.status();
-	p.close();
-	Deno.stdin.setRaw(oldRaw);
-	echo("Returned to Forge");
-}
-
-async function runDeno(path, cwd) {
-	try {
-		const r = `--allow-read=${cwd}`;
-		const w = `--allow-write=${cwd}`;
-		const cmd = ["deno", "run", "--no-remote", r, w, path];
-		const p = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
-		const a = pipe(p.stdout, "out");
-		const b = pipe(p.stderr, "err");
-		const c = p.status();
-		await Promise.all([a, b, c]);
-		p.close();
-		return { ok: true, content: "done" };
-	} catch (e) {
-		return { ok: false, error: e.message };
-	}
-}
-
-// dream on gpt-4.1...
-async function spawnDeno(path, cwd) {
-	try{
-		const cmd = ["deno", "run", "--no-remote", `--allow-read=${cwd}`, `--allow-write=${cwd}`, path];
-		const proc = await Deno.spawn(cmd, { stdout: "piped", stderr: "piped" });
-		const a = pipe(proc.stdout, "out");
-		const b = pipe(proc.stderr, "err");
-		const c = proc.status;
-		await Promise.all([a, b, c]);
-		proc.stdout.close();
-		proc.stderr.close();
-		proc.close();
-		return {ok:true,content:"done"};
-	}catch(error){
-		return {ok:false,error};
-	}
-}
-
-async function runCode(){
-	let result = await runDeno("isolation/test.js", "isolation");
-	if (result.ok) {
-		echo("[isolation] runCode ran result:"+result.content);
-	} else {
-		echo("Error:", result.error);
-	}
 }
 
 // a raw mode prompt replacement
@@ -833,18 +705,6 @@ async function promptForge(message) {
 		Deno.stdin.setRaw(false);
 	}
 	return result;
-}
-
-// a work in progess file watcher
-// callers to addShare expected to await writeForge after
-
-const eventList=[];
-
-async function watchPaths(paths,handler){
-	const watcher = Deno.watchFs(paths,{recursive:false});
-	for await (const event of watcher) {
-		eventList.push(event);
-	}
 }
 
 async function fileLength(path) {
@@ -1170,14 +1030,8 @@ async function callCommand(command) {
 			case "balance":
 				await getBalance(words);
 				break;
-			case "dos":
-				await runDOS(words);
-				break;
 			case "forge":
 				onForge(words);
-				break;
-			case "band":
-				listBand();
 				break;
 			case "counter":
 				listCounters();
@@ -1440,25 +1294,6 @@ function squashMessages(history) {
 		}
 	}
 	return squashed;
-}
-
-async function isolateCode(path,cwd) {
-	try {
-		const readAllow = `--allow-read=${cwd}`;
-		const writeAllow = `--allow-write=${cwd}`;
-		const cmd = ["deno", "run", "--no-remote", readAllow, writeAllow, path];
-		const process = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
-		const [stdout, stderr] = await Promise.all([process.output(), process.stderrOutput()]);
-		const status = await process.status();
-		process.close();
-		return {
-			success: status.success,
-			output: new TextDecoder().decode(stdout),
-			error: new TextDecoder().decode(stderr)
-		};
-	} catch (err) {
-		return { success: false, output: "", error: err.message };
-	}
 }
 
 async function processToolCalls(calls) {
@@ -1729,10 +1564,13 @@ await flush();
 await readForge();
 const rohaEndpoint={};
 for(let account in modelAccounts){
+	const t=performance.now();
 	let endpoint = await connectAccount(account);
 	if(endpoint) {
 		rohaEndpoint[account]=endpoint;
 		await specAccount(account);
+		let elapsed=performance.now()-t;
+		elapsed.toFixed(2)+"s"
 	}else{
 		echo("endpoint failure for account",account);
 	}
@@ -1772,11 +1610,6 @@ if(roha.config){
 
 await flush();
 Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.exit(0);});
-
-// debugstuff
-// await openWithDefaultApp("foundry.json");
-
-await runCode("isolation/test.js","isolation");
 
 try {
 	await chat();
