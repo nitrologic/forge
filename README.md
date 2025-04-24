@@ -27,14 +27,17 @@ exit
 
 More command documentation [forge.md](forge.md)
 
-Project roadmap [roadmap.md](roadmap.md)
+Initial nitrologic roha development [roha](https://github.com/nitrologic/roha)
 
-Initial nitrologic roha development [roha](https://github.com/Initial Second stage nitrologic foundry development [foundry](https://github.com/nitrologic/foundry) 
+Second stage nitrologic roha foundry development [foundry](https://github.com/nitrologic/foundry) 
 
 (archived)
 
 # development
 
-https://github.com/nitrologic/forge
+[plan.txt](plan.txt)
 
+[license](LICENSE)
+
+nitrologic roha foundry forge [home](https://github.com/nitrologic/forge)
 
