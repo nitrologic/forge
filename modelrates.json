@@ -57,7 +57,8 @@
 	"grok-3-beta@xai": {
 		"pricing": [3.00, 15.00],
 		"purpose": "Text and code generation",
-		"press": "Versatile model balancing performance and cost for diverse applications."
+		"press": "Versatile model balancing performance and cost for diverse applications.",
+		"reality": "Fair, thorough, sadly a tad expensive, oops, maximum prompt length exceeded."
 	},
 	"grok-3-fast-beta@xai": {
 		"pricing": [5.00, 25.00],
