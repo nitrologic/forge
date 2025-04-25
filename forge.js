@@ -9,7 +9,7 @@ import OpenAI from "https://deno.land/x/openai@v4.67.2/mod.ts";
 const terminalColumns=120;
 const slowMillis=25;
 const SpentTokenChar="¤";
-const MaxFileSize=65536;
+const MaxFileSize=512*1024;//65536;
 
 const forgeVersion = "1.0.1";
 const rohaTitle="forge "+forgeVersion;
@@ -866,17 +866,19 @@ async function commitShares(tag) {
 			const info = await Deno.stat(path);
 			const size=info.size;
 			if (!info.isFile || size > MaxFileSize) {
-				removedPaths.push(share.path);
+				removedPaths.push(path);
+				echo("dirty1",path);
 				dirty = true;
 				continue;
 			}
 			const modified = share.modified !== info.mtime.getTime();
-			const isShared = rohaShares.includes(share.path);
+			const isShared = rohaShares.includes(path);
 			if (modified || !isShared) {
 				await shareBlob(path,size,tag);
 				count++;
 				share.modified = info.mtime.getTime();
 				dirty = true;
+				echo("dirty2",path);
 				if (!rohaShares.includes(path)) rohaShares.push(path);
 			}
 			validShares.push(share);
@@ -1362,7 +1364,7 @@ async function relay() {
 		// check stone flag before enabling temperature
 		const info=(grokModel in modelRates)?modelRates[grokModel]:null;
 		if(info && !info.stone){
-			echo("not stoned",grokTemperature);
+			//echo("not stone",grokTemperature);
 			payload.temperature = grokTemperature;
 		}
 //		if(config.hasCache) payload.cache_tokens=true;
