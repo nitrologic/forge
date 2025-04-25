@@ -45,7 +45,8 @@ const flagNames={
 	resetcounters : "factory reset when reset",
 	versioning : "allow multiple versions in share history",
 	returntopush : "hit return to /push - under test",
-	slow : "experimental output at reading speed"
+	slow : "experimental output at reading speed",
+	squash : "experimental history parse"
 };
 
 const emptyRoha={
@@ -61,7 +62,8 @@ const emptyRoha={
 		broken:false,
 		logging:false,
 		resetcounters:false,
-		returntopush:false
+		returntopush:false,
+		squash:false
 	},
 	tags:{},
 	sharedFiles:[],
@@ -157,20 +159,26 @@ function resetHistory(){
 }
 
 function listHistory(){
+	let total=0;
 	let history=rohaHistory;
 	for(let i=0;i<history.length;i++){
 		let item=history[i];
-		let content=readable(item.content).substring(0,90)
-		echo(i,item.role,item.name||"forge","-",content);
+		let content=readable(item.content);
+		let clip=content.substring(0,60);
+		let size="("+content.length+")";
+		echo(i,item.role,item.name||"forge",clip,size);
+		total+=content.length;
 	}
-	if(roha.config.broken){
+	if(roha.config.squash){
 		let flat=squashMessages(rohaHistory);
 		for(let i=0;i<flat.length;i++){
 			let item=flat[i];
 			let content=readable(item.content).substring(0,90);
-			echo("flat",i,item.role,item.name||"broken",content);
+			echo("Squashed flat",i,item.role,item.name||"broken",content);
 		}
 	}
+	let size=unitString(total,4,"B");
+	echo("History size",size);
 }
 
 function rohaPush(content,name="forge"){
@@ -283,7 +291,8 @@ async function log(lines,id){
 			line=time+" ["+id+"] "+line+"\n";
 			list.push(line);
 		}
-		await Deno.writeTextFile("forge.log",list.join(),{append:true});
+		let path=resolve(forgePath,"forge.log");
+		await Deno.writeTextFile(path,list.join(),{append:true});
 	}
 }
 
@@ -774,51 +783,6 @@ const textExtensions = [
 	"sh", "bat",
 	"log","py","csv","xml","ini"
 ];
-
-async function shareFile(path,tag) {
-	let fileContent=null;
-	try {
-		const fileSize=await fileLength(path);
-		if(fileSize>MaxFileSize) throw(filesize);
-		fileContent = await Deno.readFile(path);
-	} catch (error) {
-		echo("shareFile failure path",path,"error",error);
-		return;
-	}
-	if(path.endsWith("rules.txt")){
-		let lines=decoder.decode(fileContent).split("\n");
-		for(let line of lines ){
-			if (line) rohaHistory.push({role:"system",content: line});
-		}
-	}else{
-		const length=fileContent.length;
-		if(length>0 && length<MaxFileSize){
-			const extension = path.split(".").pop();
-			const type = fileType(extension);
-			if (textExtensions.includes(extension)) {
-				let txt = decoder.decode(fileContent);
-				if(txt.length){
-					let metadata=JSON.stringify({path,length,type,tag});
-					rohaPush(metadata);
-					rohaPush(txt,"forge");
-				}
-			}else{
-				const base64Encoded = btoa(String.fromCharCode(...new Uint8Array(fileContent)));
-				const mimeType = fileType(extension);
-				let metadata=JSON.stringify({path,length,type,mimeType,tag});
-				rohaPush(metadata);
-				let binary=`File content: MIME=${mimeType}, Base64=${base64Encoded}`;
-				rohaPush(binary,"forge");
-			}
-		}
-	}
-//	if(roha.config.verbose)echo("roha shared file " + path);
-	if (!rohaShares.includes(path)) rohaShares.push(path);
-
-	if (roha.config.pushonshare) {
-		await commitShares(tag);
-	}
-}
 
 async function shareBlob(path,size,tag){
 	const extension = path.split(".").pop();
@@ -1535,7 +1499,7 @@ async function chat() {
 			if(listCommand){
 				line=await promptForge("#");
 				if(!line.startsWith("/")){
-					if(isFinite(line)){
+					if(line.length&&isFinite(line)){
 						let index=line|0;
 						await callCommand(listCommand+" "+index);
 					}
@@ -1546,7 +1510,7 @@ async function chat() {
 			}else if(creditCommand){
 				line=await promptForge("$");
 				if(!line.startsWith("/")){
-					if(isFinite(line)){
+					if(line.length&&isFinite(line)){
 						await creditCommand(line);
 					}
 					creditCommand="";
