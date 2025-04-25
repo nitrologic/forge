@@ -11,11 +11,12 @@ const slowMillis=25;
 const SpentTokenChar="¤";
 const MaxFileSize=512*1024;//65536;
 
-const forgeVersion = "1.0.1";
+const forgeVersion = "1.0.2";
 const rohaTitle="forge "+forgeVersion;
 const rohaMihi="I am testing roha forge client. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
-const pageBreak="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# #+#+# #+#+# #+#+# #+#+# #+# #+#+# #+#";
+const break40="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
+const pageBreak=break40+break40+break40;
 
 const appDir=Deno.cwd();
 const accountsPath = resolve(appDir,"accounts.json");
@@ -52,6 +53,7 @@ const emptyRoha={
 		tools:true,
 		showWelcome:false,
 		commitonstart:true,
+		pushonshare:false,
 		saveonexit:false,
 		ansi:true,
 		slow:false,
@@ -467,7 +469,7 @@ async function saveHistory(name) {
 		roha.saves.push(filename);
 		await writeForge();
 	} catch (error) {
-		console.error("Error saving history:", error.message);
+		console.error("Histroy save error",error.message);
 	}
 }
 
@@ -476,11 +478,11 @@ async function loadHistory(filename){
 	try {
 		const fileContent = await Deno.readTextFile(filename);
 		history = JSON.parse(fileContent);
-		echo("History restored from "+filename);
+		echo("History restored from",filename);
 	} catch (error) {
 		console.error("Error restoring history:", error.message);
-		echo("console error");
-		history=[{role:"system",content: "You are a helpful assistant."}];
+		echo("History restore error",error.message);
+		resetHistory()
 	}
 	return history;
 }
@@ -566,7 +568,7 @@ function mdToAnsi(md) {
 			if (!inCode) {
 				// rules
 				if(line.startsWith("---")||line.startsWith("***")||line.startsWith("___")){
-					line=pageBreak;
+					line=pageBreak.substring(0,terminalColumns-1);
 				}
 				// headershow
 				const header = line.match(/^#+/);
@@ -745,7 +747,7 @@ async function shareDir(dir, tag) {
 				const hash = await hashFile(path);
 				await addShare({ path, size, modified, hash, tag });
 			} catch (error) {
-				echo("shareDir path",path,error.message);
+				echo("shareDir path",path,"error",error.message);
 				continue;
 			}
 		}
@@ -847,12 +849,14 @@ async function shareBlob(path,size,tag){
 			const base64Encoded = btoa(String.fromCharCode(...bytes));
 			rohaPush(`File content: MIME=${mimeType}, Base64=${base64Encoded}`, "forge");
 		} catch (error) {
-			throw new Error(`Failed to encode file: ${error.message}`);
+			echo("ShareBlob encoding error",error.message);
+			return false;
 		} finally {
 			reader.releaseLock();
 //			file.close();
 		}
 	}
+	return true;
 }
 
 async function commitShares(tag) {
@@ -871,19 +875,25 @@ async function commitShares(tag) {
 			const size=info.size;
 			if (!info.isFile || size > MaxFileSize) {
 				removedPaths.push(path);
-				echo("dirty1",path);
+				echo("Removed invalid path",path);
 				dirty = true;
 				continue;
 			}
 			const modified = share.modified !== info.mtime.getTime();
 			const isShared = rohaShares.includes(path);
 			if (modified || !isShared) {
-				await shareBlob(path,size,tag);
-				count++;
-				share.modified = info.mtime.getTime();
-				dirty = true;
-				echo("dirty2",path);
-				if (!rohaShares.includes(path)) rohaShares.push(path);
+				let ok=await shareBlob(path,size,tag);
+				if(ok){
+					count++;
+					share.modified = info.mtime.getTime();
+					dirty = true;
+					if (!rohaShares.includes(path)) {
+						rohaShares.push(path);
+						echo("Shared path",path);
+					}else{
+						echo("Updated share path",path);
+					}
+				}
 			}
 			validShares.push(share);
 		} catch (error) {
