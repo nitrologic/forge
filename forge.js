@@ -361,10 +361,14 @@ async function connectAccount(account) {
 		modelList=modelList.concat(list);
 		return endpoint;
 	}catch(error){
-	// Error: 429 "Your team ac0a3c9a-0e58-4e3c-badd-be853c027a7f has either used all available credits or
-	// reached its monthly spending limit. To continue making API requests, please purchase more credits or
-	// raise your spending limit."
-		echo(error);
+		// Error: 429 "Your team ^&*^&^&*^&*
+		// has either used all available credits or reached its monthly spending limit.
+		// To continue making API requests, please purchase more credits or raise your spending limit."
+		if(error.status==429){
+			echo("Account Credit Error, please topup.");
+		}else{
+			echo(JSON.stringify(error));
+		}
 	}
 	return null;
 }
@@ -523,8 +527,8 @@ const ansiReset = "\x1b[0m";
 
 const ansiCodeTitle = ansiTealBG+ansiVividOrange;
 const ansiCodeBlock = ansiGreenBG+ansiWhite;
-
 const ansiReplyBlock = ansiGreyBG;
+const ansiDashBlock = ansiGreyBG;
 
 const ansiPop = "\x1b[1;36m";
 
@@ -1429,7 +1433,10 @@ async function relay() {
 		let temp=grokTemperature.toFixed(1)+"°";
 		let modelSpec=[grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
 		let status = "["+modelSpec.join(" ")+"]";
-		echo(status);
+		if (roha.config && roha.config.ansi)
+			echo(ansiDashBlock+status+ansiReset);
+		else
+			echo(status);
 		var reply = "<blank>";
 		for (const choice of completion.choices) {
 			let calls = choice.message.tool_calls;
@@ -1515,19 +1522,25 @@ async function chat() {
 			let line="";
 			if(listCommand){
 				line=await promptForge("#");
-				if(line && line.length && !isNaN(line)){
-					let index=line|0;
-					await callCommand(listCommand+" "+index);
+				if(!line.startsWith("/")){
+					if(isFinite(line)){
+						let index=line|0;
+						await callCommand(listCommand+" "+index);
+					}
+					listCommand="";
+					continue;
 				}
 				listCommand="";
-				continue;
 			}else if(creditCommand){
 				line=await promptForge("$");
-				if(line&&line.length && !isNaN(line)){
-					await creditCommand(line);
+				if(!line.startsWith("/")){
+					if(isFinite(line)){
+						await creditCommand(line);
+					}
+					creditCommand="";
+					continue;
 				}
 				creditCommand="";
-				continue;
 			}else{
 				line=await promptForge(lines.length?"+":rohaPrompt);
 			}
@@ -1544,7 +1557,7 @@ async function chat() {
 				echo("Ending the conversation...");
 				break dance;
 			}
-			
+
 			if (line.startsWith("/")) {
 				const command = line.substring(1).trim();
 				let dirty=await callCommand(command);

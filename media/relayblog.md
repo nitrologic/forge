@@ -1,0 +1,12 @@
+deets.png
+models
+regurgemuch
+dailychatbot
+plan
+nanolove
+xaipolite
+foundry1
+crashburnrepeat
+submssion1
+relaymodelalert
+roha3
