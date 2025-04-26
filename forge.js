@@ -11,7 +11,7 @@ const slowMillis=25;
 const SpentTokenChar="¤";
 const MaxFileSize=512*1024;//65536;
 
-const forgeVersion = "1.0.2";
+const forgeVersion = "1.0.3";
 const rohaTitle="forge "+forgeVersion;
 const rohaMihi="I am testing roha forge client. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
@@ -240,7 +240,6 @@ function unitString(value,precision=2,type){
 	const units=["","K","M","G","T"];
 	const abs=Math.abs(value);
 	const unit=(Math.log10(abs)/3)|0;
-	if(roha.config.debugging) echo("unitString unit:",unit);
 	if(unit>0){
 		if(unit>4)unit=4;
 		let n = value / Math.pow(10, unit*3);
@@ -331,32 +330,19 @@ function wordWrap(text,cols=terminalColumns){
 	return result.join("\n");
 }
 
-function safeStringify(value, seen = new WeakSet(), keyName = "") {
-	if (typeof value === "string") return value;
-	if (value === null || typeof value !== "object") return String(value);
-	if (typeof value === "function") return "[function]";
-	if (seen.has(value)) return keyName ? `[circular (${keyName})]` :"[circular]";
-	seen.add(value);
-	if (Array.isArray(value)) {
-		const items = value.map((item, index) => stringify(item, seen,
-		String(index)));
-		return `[${items.join(",\n")}]`;
-	}
-	const entries = Object.entries(value).map(([key, val]) => `${key}: ${stringify(val, seen, key)}`);
-	return `{${entries.join(",\n")}}`;
-}
-
 async function connectAccount(account) {
-	let verbose=false;//roha.config.verbose;
+	let verbose=roha.config.verbose;
 	echo("Connecting to account:", account);
 	const config = modelAccounts[account];
 	if (!config) return null;
 	try{
 		const apiKey = Deno.env.get(config.env);
 		const endpoint = new OpenAI({ apiKey, baseURL: config.url });
-		if(verbose){
+		if(roha.config.debugging){
 			for(const [key, value] of Object.entries(endpoint)){
-				let content=safeStringify(value);
+				let content=String(value);
+				content=content.replace(/\n/g, " ");
+				content=content.substring(0,30);
 				echo("endpoint:"+key+":"+content);
 			}
 		}
@@ -1112,6 +1098,7 @@ async function callCommand(command) {
 						let name=modelList[i];
 						let attr=(name==grokModel)?"*":" ";
 						let mut=(name in roha.mut)?roha.mut[name]:emptyMUT;
+						mut.name=name;
 						let flag = (mut.hasForge) ? "𝆑" : "";
 						let notes=mut.notes.join(" ");
 						let rated=name in modelRates?modelRates[name]:null;
@@ -1123,7 +1110,7 @@ async function callCommand(command) {
 					listCommand="model";
 				}
 				break;
-			case "start":
+			case "begin":
 				await pushHistory();
 				break;
 			case "finish":
@@ -1409,7 +1396,7 @@ async function relay() {
 		let temp=grokTemperature.toFixed(1)+"°";
 		let modelSpec=[grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
 		let status = "["+modelSpec.join(" ")+"]";
-		if (roha.config && roha.config.ansi)
+		if (roha.config.ansi)
 			echo(ansiDashBlock+status+ansiReset);
 		else
 			echo(status);
@@ -1445,7 +1432,7 @@ async function relay() {
 				return relay(); // Recursive call to process tool results
 			}
 			reply = choice.message.content;
-			if (roha.config && roha.config.ansi) {
+			if (roha.config.ansi) {
 //				echo(ansiSaveCursor);
 				print(mdToAnsi(reply));
 //				echo(ansiRestoreCursor);
@@ -1453,7 +1440,8 @@ async function relay() {
 				print(wordWrap(reply));
 			}
 		}
-		rohaHistory.push({ role: "assistant", content: reply });
+		const name="mut1";
+		rohaHistory.push({ role: "assistant", name, content: reply });
 	} catch (error) {
 		let line=error.message || String(error);
 		if(line.includes("maximum prompt length")){

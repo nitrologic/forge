@@ -26,8 +26,6 @@ Default values are typically:
 * 8 resetcounters : factory reset when reset : false
 * 9 returntopush : hit return to /push - under test : false
 * 10 rawPrompt : experimental rawmode stdin deno prompt replacement : false
-* 11 disorder : allow /dos command to run shell : false
-* 12 versioning : allow multiple versions in share history : false
 
 ### /temp
 
@@ -101,7 +99,7 @@ Annotate the model under test with notes and observations.
 
 ## experimental
 
-### /start
+### /begin
 
 Start a new forge session with it's own history stack.
 
@@ -110,10 +108,6 @@ Keep the current history on the forge stack.
 ### /finish
 
 Return to most recently pushed session.
-
-### /dos
-
-Begin a session with host Operating System shell.
 
 ## tags
 
