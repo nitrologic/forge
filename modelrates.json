@@ -1,4 +1,16 @@
 {
+	"gpt-4o-2024-08-06@openai": {
+		"pricing": [3.75, 1.875, 15.00],
+		"purpose": "General use with fine-tuning capabilities",
+		"press": "Designed to handle complex queries",
+		"reality": "Full featured model"
+	},
+	"gpt-4o-mini-2024-07-18@openai": {
+		"pricing": [0.30, 0.15, 1.20],
+		"purpose": "Lightweight model for efficiency",
+		"press": "Optimized for speed over complexity",
+		"reality": "Reduced capacity model"
+	},
 	"gpt-4.1-2025-04-14@openai":{
 		"pricing":[2.00,0.50,8.00],
 		"purpose":"Smartest model for complex tasks,",
