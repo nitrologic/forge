@@ -29,7 +29,7 @@ exit
 
 More command documentation [forge.md](forge.md)
 
-Developer [blog](https://github.com/nitrologic/foundry/media/relayblog.md)
+Developer [blog](https://github.com/nitrologic/media/relayblog.md)
 
 Initial nitrologic roha development [roha](https://github.com/nitrologic/roha)
 
