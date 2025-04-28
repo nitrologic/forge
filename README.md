@@ -29,7 +29,7 @@ exit
 
 Main user documentation [forge.md](forge.md)
 
-Developer blog [relayblog.md](https://github.com/nitrologic/media/relayblog.md)
+Developer blog [relayblog.md](https://github.com/nitrologic/forge/media/relayblog.md)
 
 # history
 
