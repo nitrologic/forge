@@ -21,13 +21,15 @@ Requires an api environment variable, see accounts.json for latest
 
 /push
 
-/drop
+* discuss with model under test here
 
 exit
 
 # reference
 
 More command documentation [forge.md](forge.md)
+
+Developer [blog](https://github.com/nitrologic/foundry/media/relayblog.md)
 
 Initial nitrologic roha development [roha](https://github.com/nitrologic/roha)
 
