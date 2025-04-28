@@ -1,3 +1,13 @@
+
+
+![](media/roha3.png)
+
+
+![](media/relaymodelalert.png)
+
+
+![](media/submission1.png)
+
 When Grok had eaten all the credits, Deepseek was available to lend a helping.
 
 ![](media/crashburnrepeat.png)
@@ -20,7 +30,4 @@ Am still a little stunned with the $75 per million input tokens for gpt 4.5 prev
 ![](media/plan.png)
 ![](media/regurgemuch.png)
 ![](media/relayblog.md)
-![](media/relaymodelalert.png)
-![](media/roha3.png)
-![](media/submission1.png)
 ![](media/xaipolite.png)
