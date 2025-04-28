@@ -3,6 +3,7 @@ dailychatbot.png
 deets.png
 forgerc3.png
 foundry1.png
+groknose.png
 lucy5c.png
 models.png
 nanolove.png
