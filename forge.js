@@ -1309,7 +1309,7 @@ async function processToolCalls(calls) {
 	return results;
 }
 
-async function relay() {
+async function relay(depth) {
 	const verbose=roha.config.verbose;
 	try {
 		const now=performance.now();
@@ -1400,7 +1400,7 @@ async function relay() {
 			echo(ansiDashBlock+status+ansiReset);
 		else
 			echo(status);
-		var reply = "<blank>";
+		var replies = [];
 		for (const choice of completion.choices) {
 			let calls = choice.message.tool_calls;
 			// choice has index message{role,content,refusal,annotations} finish_reason
@@ -1411,10 +1411,7 @@ async function relay() {
 				const toolCalls = calls.map((tool, index) => ({
 					id: tool.id,
 					type: "function",
-					function: {
-						name: tool.function.name,
-						arguments: tool.function.arguments || "{}"
-					}
+					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
 				// Add assistant message with tool_calls
 				let content=choice.message.content || "";
@@ -1422,26 +1419,24 @@ async function relay() {
 				if(verbose) echo("tooling",calls.length);
 				const toolResults = await processToolCalls(calls);
 				for (const result of toolResults) {
-				  rohaHistory.push({
-					role: "tool",
-					tool_call_id: result.tool_call_id,
-					name: result.name,
-					content: result.content
-				  });
+				  rohaHistory.push({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
 				}
-				return relay(); // Recursive call to process tool results
+				await relay(depth+1); // Recursive call to process tool results
 			}
-			reply = choice.message.content;
-			if (roha.config.ansi) {
-//				echo(ansiSaveCursor);
-				print(mdToAnsi(reply));
-//				echo(ansiRestoreCursor);
-			} else {
-				print(wordWrap(reply));
+			const reply = choice.message.content;
+			if(reply){
+				if (roha.config.ansi) {
+	//				echo(ansiSaveCursor);
+					print(mdToAnsi(reply));
+	//				echo(ansiRestoreCursor);
+				} else {
+					print(wordWrap(reply));
+				}
 			}
 		}
 		const name="mut1";
-		rohaHistory.push({ role: "assistant", name, content: reply });
+		let content=replies.join("\n");
+		rohaHistory.push({role:"assistant",name,content});
 	} catch (error) {
 		let line=error.message || String(error);
 		if(line.includes("maximum prompt length")){
@@ -1512,7 +1507,7 @@ async function chat() {
 				if(roha.config.returntopush && !lines.length) {
 					echo("auto pushing...");
 					await callCommand("push");
-					await relay();
+					await relay(0);
 				}
 				break;
 			}
@@ -1538,7 +1533,7 @@ async function chat() {
 			const query=lines.join("\n");
 			if(query.length){
 				rohaHistory.push({ role: "user", content: query });
-				await relay();
+				await relay(0);
 			}
 		}
 	}
