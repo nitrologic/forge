@@ -1,22 +1,25 @@
 // forge.js
-// a research client for models
+// A research tool for smelting large language models.
 // (c)2025 Simon Armstrong
 
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.67.2/mod.ts";
 
+const forgeVersion="1.0.3";
+const forgeURL="https://github.com/nitrologic/forge";
+
+const rohaTitle="forge "+forgeVersion;
+const rohaMihi="I am testing roha forge client. You are a helpful assistant.";
+const cleanupRequired="Switch model, drop shares or reset history to continue.";
+
+const break40="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
+const pageBreak=break40+break40+break40;
+
 const terminalColumns=120;
 const slowMillis=25;
 const SpentTokenChar="¤";
 const MaxFileSize=512*1024;//65536;
-
-const forgeVersion = "1.0.3";
-const rohaTitle="forge "+forgeVersion;
-const rohaMihi="I am testing roha forge client. You are a helpful assistant.";
-const cleanupRequired="Switch model, drop shares or reset history to continue.";
-const break40="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
-const pageBreak=break40+break40+break40;
 
 const appDir=Deno.cwd();
 const accountsPath = resolve(appDir,"accounts.json");
@@ -46,7 +49,8 @@ const flagNames={
 	versioning : "allow multiple versions in share history",
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed",
-	squash : "experimental history parse"
+	squash : "experimental history parse",
+	wait : "don't scroll ouput"
 };
 
 const emptyRoha={
@@ -63,7 +67,8 @@ const emptyRoha={
 		logging:false,
 		resetcounters:false,
 		returntopush:false,
-		squash:false
+		squash:false,
+		wait:true
 	},
 	tags:{},
 	sharedFiles:[],
@@ -274,6 +279,7 @@ function echo(){
 }
 
 function debug(title,value){
+	print("DDDDDDDDDDDDDDDDDDDDDD");
 	print(title);
 	if(roha.config.verbose){
 		const json=JSON.stringify(value);
@@ -296,6 +302,7 @@ async function log(lines,id){
 }
 
 async function flush() {
+	const out=writer;
 	const delay = roha.config.slow ? slowMillis : 0;
 	for (const line of printBuffer) {
 		console.log(line);
@@ -331,7 +338,6 @@ function wordWrap(text,cols=terminalColumns){
 }
 
 async function connectAccount(account) {
-	let verbose=roha.config.verbose;
 	echo("Connecting to account:", account);
 	const config = modelAccounts[account];
 	if (!config) return null;
@@ -529,17 +535,17 @@ const ansiDashBlock = ansiGreyBG;
 
 const ansiPop = "\x1b[1;36m";
 
-
-
 const ansiMoveToEnd = "\x1b[999B";
-const ansiSaveCursor = "\x1b[s";
-const ansiRestoreCursor = "\x1b[u";
+const saveCursor=new Uint8Array([27,91,115]);
+const restoreCursor=new Uint8Array([27,91,117]);
+
+const disableScroll = new Uint8Array([27, 91, 55, 59, 49, 59, 114]);
+const restoreScroll = new Uint8Array([27, 91, 114]);
 
 const rohaPrompt=">";
 let colorCycle=0;
 
 function mdToAnsi(md) {
-	let verbose=roha.config.verbose;
 	let broken=roha.config.broken;
 	const lines = md.split("\n");
 	let inCode = false;
@@ -662,6 +668,9 @@ async function promptForge(message) {
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
+	if(roha.config.wait) {
+//		await writer.write(restoreScroll);
+	}
 	Deno.stdin.setRaw(true);
 	try {
 		let busy = true;
@@ -709,6 +718,7 @@ async function promptForge(message) {
 	} finally {
 		Deno.stdin.setRaw(false);
 	}
+	if(roha.config.wait) out.write(disableScroll);
 	return result;
 }
 
@@ -1287,7 +1297,8 @@ async function processToolCalls(calls) {
 				name: tool.function?.name || "unknown",
 				content: JSON.stringify({error: "Invalid tool call format"})
 			});
-			await log(`Invalid tool call: ${JSON.stringify(tool)}`, "error");
+			await log("processToolCalls error");
+			//Invalid tool call: ${JSON.stringify(tool)}`, "error");
 			continue;
 		}
 		try {
@@ -1303,7 +1314,8 @@ async function processToolCalls(calls) {
 				name: tool.function.name,
 				content: JSON.stringify({error: e.message})
 			});
-			await log(`Tool call failed: ${tool.function.name} - ${e.message}`, "error");
+			await log("processToolCalls failure");
+			//`Tool call failed: ${tool.function.name} - ${e.message}`, "error");
 		}
 	}
 	return results;
@@ -1369,14 +1381,14 @@ async function relay(depth) {
 				let lode = roha.lode[account];
 				if(lode && typeof lode.credit === "number") {
 					lode.credit-=spend;
-					if (roha.config.verbose) {
-						let summary=`account ${account} spent $${spend.toFixed(4)} balance $${(lode.credit).toFixed(4)} ${SpentTokenChar}[${spent[0]},${spent[1]}]`;
+					if (verbose) {
+						let summary="{account:"+account+",spent:"+spend.toFixed(4)+",balance:"+(lode.credit).toFixed(4)+"}";
 						echo(summary);
 					}
 				}
 				await writeForge();
 			}else{
-				if(roha.config.verbose){
+				if(verbose){
 					echo("modelRates not found for",grokModel);
 				}
 			}
@@ -1388,7 +1400,9 @@ async function relay(depth) {
 			}
 		}
 
-		if(usage.prompt_tokens_details) echo(JSON.stringify(usage.prompt_tokens_details));
+		const details=(usage.prompt_tokens_details)?JSON.stringify(usage.prompt_tokens_details):"";
+
+//		if(usage.prompt_tokens_details) echo(JSON.stringify(usage.prompt_tokens_details));
 //		if(usage.prompt_tokens_details) echo(JSON.stringify(usage));
 
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
@@ -1416,7 +1430,7 @@ async function relay(depth) {
 				// Add assistant message with tool_calls
 				let content=choice.message.content || "";
 				rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});
-				if(verbose) echo("tooling",calls.length);
+				if(verbose) echo("tooling name",tool.function.name,calls.length);
 				const toolResults = await processToolCalls(calls);
 				for (const result of toolResults) {
 				  rohaHistory.push({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
@@ -1426,9 +1440,7 @@ async function relay(depth) {
 			const reply = choice.message.content;
 			if(reply){
 				if (roha.config.ansi) {
-	//				echo(ansiSaveCursor);
 					print(mdToAnsi(reply));
-	//				echo(ansiRestoreCursor);
 				} else {
 					print(wordWrap(reply));
 				}
@@ -1601,7 +1613,10 @@ if(roha.config){
 }
 
 await flush();
+
+// continues to be problematic for Windows escape key
 Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.exit(0);});
+//Deno.addSignalListener("SIGINT", () => {console.log("sigint!");});
 
 try {
 	await chat();
