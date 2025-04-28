@@ -19,7 +19,7 @@ const pageBreak=break40+break40+break40;
 const terminalColumns=120;
 const slowMillis=25;
 const SpentTokenChar="¤";
-const MaxFileSize=512*1024;//65536;
+const MaxFileSize=2*1024*1024;//65536;
 
 const appDir=Deno.cwd();
 const accountsPath = resolve(appDir,"accounts.json");
@@ -50,7 +50,7 @@ const flagNames={
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed",
 	squash : "experimental history parse",
-	wait : "don't scroll ouput"
+	pagemode : "use a page mode interface"
 };
 
 const emptyRoha={
@@ -68,7 +68,7 @@ const emptyRoha={
 		resetcounters:false,
 		returntopush:false,
 		squash:false,
-		wait:true
+		pagemode:true
 	},
 	tags:{},
 	sharedFiles:[],
@@ -539,6 +539,7 @@ const ansiMoveToEnd = "\x1b[999B";
 const saveCursor=new Uint8Array([27,91,115]);
 const restoreCursor=new Uint8Array([27,91,117]);
 
+const homeCursor = new Uint8Array([27, 91, 72]);
 const disableScroll = new Uint8Array([27, 91, 55, 59, 49, 59, 114]);
 const restoreScroll = new Uint8Array([27, 91, 114]);
 
@@ -668,8 +669,8 @@ async function promptForge(message) {
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
-	if(roha.config.wait) {
-//		await writer.write(restoreScroll);
+	if(roha.config.page) {
+		await writer.write(homeCursor);
 	}
 	Deno.stdin.setRaw(true);
 	try {
@@ -718,7 +719,7 @@ async function promptForge(message) {
 	} finally {
 		Deno.stdin.setRaw(false);
 	}
-	if(roha.config.wait) out.write(disableScroll);
+	if(roha.config.page) await writer.write(homeCursor);
 	return result;
 }
 
@@ -1421,16 +1422,13 @@ async function relay(depth) {
 			if (calls) {
 				increment("calls");
 				debug("relay calls in progress",calls)
-				// Generate tool_calls with simple, unique IDs
 				const toolCalls = calls.map((tool, index) => ({
 					id: tool.id,
 					type: "function",
 					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
-				// Add assistant message with tool_calls
 				let content=choice.message.content || "";
-				rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});
-				if(verbose) echo("tooling name",tool.function.name,calls.length);
+				rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});							
 				const toolResults = await processToolCalls(calls);
 				for (const result of toolResults) {
 				  rohaHistory.push({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
@@ -1474,6 +1472,7 @@ async function relay(depth) {
 				return;
 			}
 		}
+		//unhandled error line: 400 status code (no body)+
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
 		echo("unhandled error line:", line);

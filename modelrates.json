@@ -1,4 +1,14 @@
 {
+	"deepseek-chat@deepseek": {
+		"pricing": [0.27, 0.07, 1.10],
+		"purpose": "General conversation and text generation",
+		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
+	},
+	"deepseek-reasoner@deepseek": {
+		"pricing": [0.55, 0.14, 2.19],
+		"purpose": "Advanced reasoning and problem-solving",
+		"press": "High-performance model for complex math, coding, and logical tasks."
+	},
 	"gpt-4o-2024-08-06@openai": {
 		"pricing": [3.75, 1.875, 15.00],
 		"purpose": "General use with fine-tuning capabilities",
@@ -32,16 +42,6 @@
 	"gpt-4.5-preview-2025-02-27@openai":{
 		"pricing":[75.00,37.50,150.00],
 		"purpose":"burn money"
-	},
-	"deepseek-chat@deepseek": {
-		"pricing": [0.27, 0.07, 1.10],
-		"purpose": "General conversation and text generation",
-		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
-	},
-	"deepseek-reasoner@deepseek": {
-		"pricing": [0.55, 0.14, 2.19],
-		"purpose": "Advanced reasoning and problem-solving",
-		"press": "High-performance model for complex math, coding, and logical tasks."
 	},
 	"models/gemini-2.5-pro-preview-03-25@gemini":{
 		"pricing":[1.25,10.0],
