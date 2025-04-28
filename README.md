@@ -27,15 +27,15 @@ exit
 
 # reference
 
-More command documentation [forge.md](forge.md)
+Main user documentation [forge.md](forge.md)
 
-Developer [blog](https://github.com/nitrologic/media/relayblog.md)
+Developer blog [relayblog.md](https://github.com/nitrologic/media/relayblog.md)
+
+# history
 
 Initial nitrologic roha development [roha](https://github.com/nitrologic/roha)
 
 Second stage nitrologic roha foundry development [foundry](https://github.com/nitrologic/foundry) 
-
-(archived)
 
 # development
 
