@@ -11,7 +11,7 @@ Requires an api environment variable, see accounts.json for latest
 
 # interface
 
-[model modelname promptTokens replyTokens totalTokens contextSize]
+[model-name@account temperature° $cost.000 context.00KB time.00s]
 
 # commands
 

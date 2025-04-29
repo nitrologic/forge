@@ -1,3 +1,4 @@
+- use data:text/css,content uri for text type content
 - modelRates -> modelInfo
 - adventure mode with rooms
 - upgrade to non blocking fs usage

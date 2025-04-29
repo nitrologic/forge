@@ -6,17 +6,18 @@ import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.67.2/mod.ts";
 
-const terminalColumns=120;
-const slowMillis=25;
-const SpentTokenChar="¤";
-const MaxFileSize=512*1024;//65536;
-
-const forgeVersion = "1.0.3";
+const forgeVersion = "1.0.4";
 const rohaTitle="forge "+forgeVersion;
 const rohaMihi="I am testing roha forge client. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
+const exitMessage="";
 const break40="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
 const pageBreak=break40+break40+break40;
+
+const terminalColumns=120;
+const slowMillis=25;
+const SpentTokenChar="¤";
+const MaxFileSize=512*1024;
 
 const appDir=Deno.cwd();
 const accountsPath = resolve(appDir,"accounts.json");
@@ -74,18 +75,14 @@ const emptyRoha={
 	forge:[]
 };
 
-function cleanup(){
-	Deno.stdin.setRaw(false);
-}
-
 async function exitForge(){
-	echo("exitForge");
+	echo(exitMessage);
 	await flush();
 	if(roha.config.saveonexit){
 		await saveHistory();
 	}
 	await flush();
-	cleanup();
+	Deno.stdin.setRaw(false);
 }
 
 function price(credit){
@@ -1518,7 +1515,6 @@ async function chat() {
 			}
 			if(!line) break;//simon was here
 			if (line === "exit") {
-				echo("Ending the conversation...");
 				break dance;
 			}
 
@@ -1606,7 +1602,8 @@ if(roha.config){
 }
 
 await flush();
-Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.exit(0);});
+
+// Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.exit(0);});
 
 try {
 	await chat();
