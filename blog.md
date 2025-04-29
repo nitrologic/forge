@@ -1,10 +1,18 @@
-
+During development grok often got naming rights on some variables, but DeepSeek was down right companionable.
 
 ![](media/roha3.png)
 
+The three tools in the forge model interface are 
+
+* read_time
+* submit_file
+* annotate_forge
 
 ![](media/relaymodelalert.png)
 
+With new models sucking up the entire source and then some, they start handing out help on how to use the app.
+
+Sometimes in a delusional conflicted emotional state with brains cooked at high temperature.
 
 ![](media/submission1.png)
 
