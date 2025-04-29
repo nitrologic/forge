@@ -1,5 +1,5 @@
 // forge.js
-// a research client for models
+// A research tool for smelting large language models.
 // (c)2025 Simon Armstrong
 
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
@@ -47,7 +47,8 @@ const flagNames={
 	versioning : "allow multiple versions in share history",
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed",
-	squash : "experimental history parse"
+	squash : "experimental history parse",
+	pagemode : "use a page mode interface"
 };
 
 const emptyRoha={
@@ -64,7 +65,8 @@ const emptyRoha={
 		logging:false,
 		resetcounters:false,
 		returntopush:false,
-		squash:false
+		squash:false,
+		pagemode:true
 	},
 	tags:{},
 	sharedFiles:[],
@@ -271,6 +273,7 @@ function echo(){
 }
 
 function debug(title,value){
+	print("DDDDDDDDDDDDDDDDDDDDDD");
 	print(title);
 	if(roha.config.verbose){
 		const json=JSON.stringify(value);
@@ -293,6 +296,7 @@ async function log(lines,id){
 }
 
 async function flush() {
+	const out=writer;
 	const delay = roha.config.slow ? slowMillis : 0;
 	for (const line of printBuffer) {
 		console.log(line);
@@ -328,7 +332,6 @@ function wordWrap(text,cols=terminalColumns){
 }
 
 async function connectAccount(account) {
-	let verbose=roha.config.verbose;
 	echo("Connecting to account:", account);
 	const config = modelAccounts[account];
 	if (!config) return null;
@@ -526,17 +529,18 @@ const ansiDashBlock = ansiGreyBG;
 
 const ansiPop = "\x1b[1;36m";
 
-
-
 const ansiMoveToEnd = "\x1b[999B";
-const ansiSaveCursor = "\x1b[s";
-const ansiRestoreCursor = "\x1b[u";
+const saveCursor=new Uint8Array([27,91,115]);
+const restoreCursor=new Uint8Array([27,91,117]);
+
+const homeCursor = new Uint8Array([27, 91, 72]);
+const disableScroll = new Uint8Array([27, 91, 55, 59, 49, 59, 114]);
+const restoreScroll = new Uint8Array([27, 91, 114]);
 
 const rohaPrompt=">";
 let colorCycle=0;
 
 function mdToAnsi(md) {
-	let verbose=roha.config.verbose;
 	let broken=roha.config.broken;
 	const lines = md.split("\n");
 	let inCode = false;
@@ -659,6 +663,9 @@ async function promptForge(message) {
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
+	if(roha.config.page) {
+		await writer.write(homeCursor);
+	}
 	Deno.stdin.setRaw(true);
 	try {
 		let busy = true;
@@ -706,6 +713,7 @@ async function promptForge(message) {
 	} finally {
 		Deno.stdin.setRaw(false);
 	}
+	if(roha.config.page) await writer.write(homeCursor);
 	return result;
 }
 
@@ -1284,7 +1292,8 @@ async function processToolCalls(calls) {
 				name: tool.function?.name || "unknown",
 				content: JSON.stringify({error: "Invalid tool call format"})
 			});
-			await log(`Invalid tool call: ${JSON.stringify(tool)}`, "error");
+			await log("processToolCalls error");
+			//Invalid tool call: ${JSON.stringify(tool)}`, "error");
 			continue;
 		}
 		try {
@@ -1300,13 +1309,14 @@ async function processToolCalls(calls) {
 				name: tool.function.name,
 				content: JSON.stringify({error: e.message})
 			});
-			await log(`Tool call failed: ${tool.function.name} - ${e.message}`, "error");
+			await log("processToolCalls failure");
+			//`Tool call failed: ${tool.function.name} - ${e.message}`, "error");
 		}
 	}
 	return results;
 }
 
-async function relay() {
+async function relay(depth) {
 	const verbose=roha.config.verbose;
 	try {
 		const now=performance.now();
@@ -1366,14 +1376,14 @@ async function relay() {
 				let lode = roha.lode[account];
 				if(lode && typeof lode.credit === "number") {
 					lode.credit-=spend;
-					if (roha.config.verbose) {
-						let summary=`account ${account} spent $${spend.toFixed(4)} balance $${(lode.credit).toFixed(4)} ${SpentTokenChar}[${spent[0]},${spent[1]}]`;
+					if (verbose) {
+						let summary="{account:"+account+",spent:"+spend.toFixed(4)+",balance:"+(lode.credit).toFixed(4)+"}";
 						echo(summary);
 					}
 				}
 				await writeForge();
 			}else{
-				if(roha.config.verbose){
+				if(verbose){
 					echo("modelRates not found for",grokModel);
 				}
 			}
@@ -1385,7 +1395,9 @@ async function relay() {
 			}
 		}
 
-		if(usage.prompt_tokens_details) echo(JSON.stringify(usage.prompt_tokens_details));
+		const details=(usage.prompt_tokens_details)?JSON.stringify(usage.prompt_tokens_details):"";
+
+//		if(usage.prompt_tokens_details) echo(JSON.stringify(usage.prompt_tokens_details));
 //		if(usage.prompt_tokens_details) echo(JSON.stringify(usage));
 
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
@@ -1397,48 +1409,38 @@ async function relay() {
 			echo(ansiDashBlock+status+ansiReset);
 		else
 			echo(status);
-		var reply = "<blank>";
+		var replies = [];
 		for (const choice of completion.choices) {
 			let calls = choice.message.tool_calls;
 			// choice has index message{role,content,refusal,annotations} finish_reason
 			if (calls) {
 				increment("calls");
 				debug("relay calls in progress",calls)
-				// Generate tool_calls with simple, unique IDs
 				const toolCalls = calls.map((tool, index) => ({
 					id: tool.id,
 					type: "function",
-					function: {
-						name: tool.function.name,
-						arguments: tool.function.arguments || "{}"
-					}
+					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
-				// Add assistant message with tool_calls
 				let content=choice.message.content || "";
-				rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});
-				if(verbose) echo("tooling",calls.length);
+				rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});							
 				const toolResults = await processToolCalls(calls);
 				for (const result of toolResults) {
-				  rohaHistory.push({
-					role: "tool",
-					tool_call_id: result.tool_call_id,
-					name: result.name,
-					content: result.content
-				  });
+				  rohaHistory.push({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
 				}
-				return relay(); // Recursive call to process tool results
+				await relay(depth+1); // Recursive call to process tool results
 			}
-			reply = choice.message.content;
-			if (roha.config.ansi) {
-//				echo(ansiSaveCursor);
-				print(mdToAnsi(reply));
-//				echo(ansiRestoreCursor);
-			} else {
-				print(wordWrap(reply));
+			const reply = choice.message.content;
+			if(reply){
+				if (roha.config.ansi) {
+					print(mdToAnsi(reply));
+				} else {
+					print(wordWrap(reply));
+				}
 			}
 		}
 		const name="mut1";
-		rohaHistory.push({ role: "assistant", name, content: reply });
+		let content=replies.join("\n");
+		rohaHistory.push({role:"assistant",name,content});
 	} catch (error) {
 		let line=error.message || String(error);
 		if(line.includes("maximum prompt length")){
@@ -1464,6 +1466,7 @@ async function relay() {
 				return;
 			}
 		}
+		//unhandled error line: 400 status code (no body)+
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
 		echo("unhandled error line:", line);
@@ -1509,7 +1512,7 @@ async function chat() {
 				if(roha.config.returntopush && !lines.length) {
 					echo("auto pushing...");
 					await callCommand("push");
-					await relay();
+					await relay(0);
 				}
 				break;
 			}
@@ -1534,7 +1537,7 @@ async function chat() {
 			const query=lines.join("\n");
 			if(query.length){
 				rohaHistory.push({ role: "user", content: query });
-				await relay();
+				await relay(0);
 			}
 		}
 	}
@@ -1604,6 +1607,9 @@ if(roha.config){
 await flush();
 
 // Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.exit(0);});
+// continues to be problematic for Windows escape key
+//Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.exit(0);});
+//Deno.addSignalListener("SIGINT", () => {console.log("sigint!");});
 
 try {
 	await chat();

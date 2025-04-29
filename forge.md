@@ -59,6 +59,8 @@ Posts new versions of file content if modified.
 
 Clear all shared files and conversation history.
 
+If config resetcounters true then clear all counters too.
+
 ### /history
 
 List a summary of recent conversation entries. 
