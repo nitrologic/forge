@@ -46,7 +46,7 @@ Into the weeds with Gemini2.5
 
 ![](media/plan.png)
 
-<img src="media/lucy5c.png" style="height:50px"/>
+<img src="media/lucy5c.png" style="height:220px"/>
 
 Surprise me Grok!
 
