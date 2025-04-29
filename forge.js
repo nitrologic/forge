@@ -1436,10 +1436,11 @@ async function relay(depth) {
 				} else {
 					print(wordWrap(reply));
 				}
+				replies.push(reply);
 			}
 		}
 		const name="mut1";
-		let content=replies.join("\n");
+		let content=replies.join("\n\n");
 		rohaHistory.push({role:"assistant",name,content});
 	} catch (error) {
 		let line=error.message || String(error);
