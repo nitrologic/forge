@@ -34,17 +34,30 @@ No I want you to do this with that, don't make me check our history stack
 
 ![](media/forgerc3.png)
 
+This was my budget for the week, if you work 3 day weeks.
 
 ![](media/xaipolite.png)
 
+Nano, we love you and your 1s response times.
+
 ![](media/nanolove.png)
+
+Into the weeds with Gemini2.5
 
 ![](media/plan.png)
 
+Surprise me Grok!
+
 ![](media/groknose.png)
+
+Pricing remains a huge eyesore, burn more coal.
 
 ![](media/models.png)
 
+Let me help you, help the other model, that was in the chat, further up the history stack....
+
 ![](media/regurgemuch.png)
+
+Les relatable are us.
 
 ![](media/relayblog.md)
