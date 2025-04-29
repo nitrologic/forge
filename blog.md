@@ -1,4 +1,4 @@
-During development grok often got naming rights on some variables, but DeepSeek was down right companionable.
+During roha foundry forge development Grok got naming rights on some key variables, but DeepSeek was down right companionable from the start.
 
 ![](media/roha3.png)
 
