@@ -30,12 +30,21 @@ Am still a little stunned with the $75 per million input tokens for gpt 4.5 prev
 
 ![](media/deets.png)
 
+No I want you to do this with that, don't make me check our history stack
+
 ![](media/forgerc3.png)
-![](media/foundry1.png)
-![](media/groknose.png)
-![](media/models.png)
-![](media/nanolove.png)
-![](media/plan.png)
-![](media/regurgemuch.png)
-![](media/relayblog.md)
+
+
 ![](media/xaipolite.png)
+
+![](media/nanolove.png)
+
+![](media/plan.png)
+
+![](media/groknose.png)
+
+![](media/models.png)
+
+![](media/regurgemuch.png)
+
+![](media/relayblog.md)
