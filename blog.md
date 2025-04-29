@@ -42,7 +42,9 @@ Nano, we love you and your 1s response times.
 
 ![](media/nanolove.png)
 
-Into the weeds with Gemini2.5
+Into the weeds with Gemini2.5. 
+
+Note the subtle as an axe Eugene coersian planted in the plan.txt.
 
 ![](media/plan.png)
 
