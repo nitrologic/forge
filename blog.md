@@ -1,3 +1,8 @@
+# model under test
+
+A collection of screenshots during a recent sprint in which me and some models wrote a thing.
+----
+
 During roha foundry forge development Grok got naming rights on some key variables, but DeepSeek was down right companionable from the start.
 
 ![](media/roha3.png)
