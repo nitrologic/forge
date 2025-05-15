@@ -342,24 +342,15 @@ async function listModels(config){
 	return null;
 }
 
-/*
-curl -L -X GET 'https://api.deepseek.com/models' \
--H 'Accept: application/json' \
--H 'Authorization: Bearer <TOKEN>
-*/
-
 async function connectDeep(account,config) {
 	try{
 		const baseURL = config.url;
 		const apiKey = Deno.env.get(config.env);
 		if(!apiKey) return null;
 		const headers={Authorization:"Bearer "+apiKey,"Content-Type":"application/json"};
-//		console.log("connectDeep",headers,baseURL);
 		const response=await fetch(baseURL+"/models",{method:"GET",headers});
-//		console.log("connectDeep",response);
 		if (!response.ok) return null;
 		const models = await response.json();
-//		console.log("connectDeep",models);
 		const list = models.data.map(model => `${model.id}@${account}`);                                                                                                                                                                                                                   
 		modelList.push(...list);
 		return {
