@@ -1,3 +1,4 @@
+- support DeepSeek user balance https://api-docs.deepseek.com/api/get-user-balance
 - load / continue history saves
 - raw mode - fix multiline paste
 - split terminal
