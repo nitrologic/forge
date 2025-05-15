@@ -5,6 +5,12 @@
 		"url":"https://api.deepseek.com",
 		"api":"DeepSeek"
 	},
+	"openai": {
+		"currency": "USD",
+		"env": "OPENAI_API_KEY",
+		"url": "https://api.openai.com/v1",
+		"api":"OpenAI"
+	},
 	"gemini":{
 		"currency":"USD",
 		"env":"GEMINI_API_KEY",
