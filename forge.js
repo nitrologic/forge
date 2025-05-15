@@ -5,6 +5,7 @@
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.67.2/mod.ts";
+import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
 const forgeVersion = "1.0.5";
 const rohaTitle="forge "+forgeVersion;
@@ -342,6 +343,59 @@ async function listModels(config){
 	return null;
 }
 
+async function connectGoogle(account,config){
+	try{
+		const baseURL = config.url;
+		const apiKey = Deno.env.get(config.env);
+		if(!apiKey) return null;
+		console.log("fetching gemini models");
+		const response=await fetch(baseURL+"/models?key="+apiKey);
+		if (!response.ok) {
+			console.log("connectGoogle response",response)
+			return null;
+		}
+		const models = await response.json();
+		const list=[];
+		for(const model of models.models){
+			list.push(model.name+"@"+account);
+		}
+		modelList.push(...list);
+		const genAI = new GoogleGenerativeAI(apiKey);
+		return {
+			genAI,
+			apiKey,
+			baseURL,
+			models: {
+				list: async () => models, // Return cached models or fetch fresh
+			},
+			chat: {
+				completions: {
+					create: async (payload) => {
+						const model = genAI.getGenerativeModel({model:payload.model});
+						const content = payload.messages[0].content;
+						const result = await model.generateContent(content);
+//						console.log("result",result);
+						const text=await result.response.text();
+						const usage=result.response.usageMetadata;
+						return {
+							model:payload.model,
+							choices:[{message:{content:text}}],
+							usage:{
+								prompt_tokens:usage.promptTokenCount,
+								completion_tokens:usage.candidatesTokenCount+usage.thoughtsTokenCount,
+								total_tokens:usage.totalTokenCount
+							}
+						};
+					},
+				},
+			},
+		};
+	} catch (error) {
+		console.log("connectGoogle error:",error.message);
+		return null;
+	}
+}
+
 async function connectDeep(account,config) {
 	try{
 		const baseURL = config.url;
@@ -351,7 +405,7 @@ async function connectDeep(account,config) {
 		const response=await fetch(baseURL+"/models",{method:"GET",headers});
 		if (!response.ok) return null;
 		const models = await response.json();
-		const list = models.data.map(model => `${model.id}@${account}`);                                                                                                                                                                                                                   
+		const list = models.data.map(model => `${model.id}@${account}`);
 		modelList.push(...list);
 		return {
 			apiKey,
@@ -428,6 +482,8 @@ async function connectAccount(account) {
 			return await connectOpenAIAccount(account,config)
 		case "DeepSeek":
 			return await connectDeep(account,config)
+		case "Google":
+			return await connectGoogle(account,config)
 	}
 	return null;
 }
