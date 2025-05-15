@@ -6,7 +6,7 @@ import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.67.2/mod.ts";
 
-const forgeVersion = "1.0.4";
+const forgeVersion = "1.0.5";
 const rohaTitle="forge "+forgeVersion;
 const rohaMihi="I am testing roha forge client. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
@@ -331,10 +331,71 @@ function wordWrap(text,cols=terminalColumns){
 	return result.join("\n");
 }
 
-async function connectAccount(account) {
-	echo("Connecting to account:", account);
-	const config = modelAccounts[account];
-	if (!config) return null;
+async function listModels(config){
+	let url=config.url+"/models";
+	let response = await fetch(url);
+	if(response.ok){
+		console.log(await response.text());
+	}else{
+		console.log(response);
+	}
+	return null;
+}
+
+/*
+curl -L -X GET 'https://api.deepseek.com/models' \
+-H 'Accept: application/json' \
+-H 'Authorization: Bearer <TOKEN>
+*/
+
+async function connectDeep(account,config) {
+	try{
+		const baseURL = config.url;
+		const apiKey = Deno.env.get(config.env);
+		if(!apiKey) return null;
+
+		const headers={Authorization:"Bearer "+apiKey,"Content-Type":"application/json"};
+		console.log("connectDeep",headers,baseURL);
+		const response=await fetch(baseURL+"/models",{method:"GET",headers});
+		console.log("connectDeep",response);
+
+		if (!response.ok) return null;
+
+		const models = await response.json();
+		console.log("connectDeep",models);
+
+		const list = models.data.map(model => `${model.id}@${account}`);                                                                                                                                                                                                                   
+		modelList.push(...list);
+		return {
+			apiKey,
+			baseURL,
+			models: {
+				list: async () => models, // Return cached models or fetch fresh
+			},
+			chat: {
+				completions: {
+					create: async (payload) => {
+						const url = `${baseURL}/chat/completions`;
+						const response = await fetch(url, {
+							method: "POST",
+							headers,
+							body: JSON.stringify(payload),
+						});
+						if (!response.ok) {
+							throw new Error(`DeepSeek API error: ${response.statusText}`);
+						}
+						return await response.json();
+					},
+				},
+			},
+		};
+	} catch (error) {
+		echo(`Account ${account} fetch error: ${error.message}`);
+		return null;
+	}
+}
+
+async function connectOpenAIAccount(account,config) {
 	try{
 		const apiKey = Deno.env.get(config.env);
 		const endpoint = new OpenAI({ apiKey, baseURL: config.url });
@@ -346,12 +407,13 @@ async function connectAccount(account) {
 				echo("endpoint:"+key+":"+content);
 			}
 		}
+	//		const models2=await listModels(config);
 		const models = await endpoint.models.list();
 		const list=[];
 		for (const model of models.data) {
 			let name=model.id+"@"+account;
 			list.push(name);
-// dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
+	// dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
 			await specModel(model,account);
 		}
 		list.sort();
@@ -366,6 +428,19 @@ async function connectAccount(account) {
 		}else{
 			echo(JSON.stringify(error));
 		}
+	}
+}
+
+async function connectAccount(account) {
+	echo("Connecting to account:", account);
+	const config = modelAccounts[account];
+	if (!config) return null;
+	const api= config.api;
+	switch(api){
+		case "OpenAI":
+			return await connectOpenAIAccount(account,config)
+		case "DeepSeek":
+			return await connectDeep(account,config)
 	}
 	return null;
 }
@@ -1422,7 +1497,7 @@ async function relay(depth) {
 					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
 				let content=choice.message.content || "";
-				rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});							
+				rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});
 				const toolResults = await processToolCalls(calls);
 				for (const result of toolResults) {
 				  rohaHistory.push({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});

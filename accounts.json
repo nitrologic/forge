@@ -1,22 +1,14 @@
 {
 	"deepseek":{
-		"currency": "CNY",
+		"currency":"CNY",
 		"env":"DEEPSEEK_API_KEY",
-		"url":"https://api.deepseek.com"
-	},
-	"xai": {
-		"currency": "USD",
-		"env": "XAI_API_KEY",
-		"url": "https://api.x.ai/v1"
-	},
-	"openai": {
-		"currency": "USD",
-		"env": "OPENAI_API_KEY",
-		"url": "https://api.openai.com/v1"
+		"url":"https://api.deepseek.com",
+		"api":"DeepSeek"
 	},
 	"gemini":{
-		"currency": "USD",
+		"currency":"USD",
 		"env":"GEMINI_API_KEY",
-		"url":"https://generativelanguage.googleapis.com/v1beta/openai"
+		"url":"https://generativelanguage.googleapis.com/v1beta/openai",
+		"api":"OpenAI"
 	}
 }

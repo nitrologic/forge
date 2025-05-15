@@ -49,6 +49,10 @@
 		"press":"A state-of-the-art multipurpose model",
 		"reality":"Not cheap, and often a complete dunce."
 	},
+	"models/gemini-2.5-flash-preview-04-17@gemini":{
+		"pricing":[0.15,0.60],
+		"purpose":"1M token context window and has thinking budgets"
+	},
 	"models/gemini-2.0-flash@gemini":{
 		"pricing":[0.10,0.40],
 		"purpose":"High-performance multimodal model optimized for agent-based applications.",
