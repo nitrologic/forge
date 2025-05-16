@@ -1111,6 +1111,17 @@ async function callCommand(command) {
 	let words = command.split(" ");
 	try {
 		switch (words[0]) {
+			case "think":
+				if (words.length > 1) {
+					const newThink = parseFloat(words[1]);
+					if (!isNaN(newThink) && newThink >= 0 && newThink <= 8192) {
+						grokThink = newThink;
+					}
+				}
+				echo("Current model thinking budget is", grokThink);
+				break;
+
+
 			case "temp":
 				if (words.length > 1) {
 					const newTemp = parseFloat(words[1]);
@@ -1457,6 +1468,9 @@ async function relay(depth) {
 			//echo("not stone",grokTemperature);
 			payload.temperature = grokTemperature;
 		}
+		if(info && info.pricing.length>3 && grokThink>0){
+			payload.config={thinkingConfig:{thinkingBudget:grokThink}};
+		}
 //		if(config.hasCache) payload.cache_tokens=true;
 		const completion = await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
@@ -1480,9 +1494,8 @@ async function relay(depth) {
 			if(grokModel in modelRates){
 				let rate=modelRates[grokModel].pricing||[0,0];
 				const tokenRate=rate[0];
-				const outputRate=rate[rate.length-1];
-				// a controversial take on billing, nano thinks I'm a dick
-				if(rate.length==3){
+				const outputRate=rate[rate.length>2?2:1];
+				if(rate.length>2){
 					const cacheRate=rate[1];
 					const cached=usage.prompt_tokens_details.cached_tokens||0;
 					spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6+cached*cacheRate/1e6;
@@ -1698,6 +1711,7 @@ let grokModel = roha.model||"deepseek-chat@deepseek";
 let grokFunctions=true;
 let grokUsage = 0;
 let grokTemperature = 1.0;
+let grokThink = 0.0;
 
 echo("present [",grokModel,"]");
 echo("shares",roha.sharedFiles.length)

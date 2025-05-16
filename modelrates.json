@@ -9,6 +9,10 @@
 		"purpose": "Advanced reasoning and problem-solving",
 		"press": "High-performance model for complex math, coding, and logical tasks."
 	},
+	"o3-mini-2025-01-31@openai":{
+		"pricing": [10, 2.50, 40.00],
+		"purpose": "Pushing the frontier of cost-effective reasoning."
+	},
 	"gpt-4o-2024-08-06@openai": {
 		"pricing": [3.75, 1.875, 15.00],
 		"purpose": "General use with fine-tuning capabilities",
@@ -43,15 +47,17 @@
 		"pricing":[75.00,37.50,150.00],
 		"purpose":"burn money"
 	},
-	"models/gemini-2.5-pro-preview-03-25@gemini":{
+	"models/gemini-2.5-pro-preview-05-06@gemini":{
 		"pricing":[1.25,10.0],
 		"purpose":"Excels at coding and complex reasoning tasks",
 		"press":"A state-of-the-art multipurpose model",
 		"reality":"Not cheap, and often a complete dunce."
 	},
 	"models/gemini-2.5-flash-preview-04-17@gemini":{
-		"pricing":[0.15,0.60],
-		"purpose":"1M token context window and has thinking budgets"
+		"pricing":[0.15,0.15,0.60,3.50],
+		"purpose":"Adaptive thinking, cost efficiency.",
+		"press":"The best price-to-performance ratio.",
+		"reality":"testing now, thinking budget say what now?"
 	},
 	"models/gemini-2.0-flash@gemini":{
 		"pricing":[0.10,0.40],
