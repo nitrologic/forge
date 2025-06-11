@@ -9,9 +9,16 @@
 		"purpose": "Advanced reasoning and problem-solving",
 		"press": "High-performance model for complex math, coding, and logical tasks."
 	},
+	"o3-2025-04-16@openai":{
+		"pricing":[2.00, 0.50, 8.00],
+		"purpose":"well-rounded and powerful model across domains",
+		"press":"Excels at math, science, coding, visual reasoning tasks, technical writing and instruction-following"
+	},
 	"o3-mini-2025-01-31@openai":{
-		"pricing": [10, 2.50, 40.00],
-		"purpose": "Pushing the frontier of cost-effective reasoning."
+		"pricing": [10.00, 2.50, 40.00],
+		"purpose": "Pushing the frontier of cost-effective reasoning.",
+		"press": "tbc",
+		"reality": "fabricates often, cuts corners oddly"
 	},
 	"gpt-4o-2024-08-06@openai": {
 		"pricing": [3.75, 1.875, 15.00],

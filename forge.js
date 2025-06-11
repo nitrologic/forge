@@ -926,7 +926,7 @@ async function shareBlob(path,size,tag){
 			return false;
 		} finally {
 			reader.releaseLock();
-//			file.close();
+			file.close();
 		}
 	}
 	return true;
@@ -1359,7 +1359,7 @@ async function onCall(toolCall) {
 			let filePath = resolve(forgePath,name);
 			await Deno.writeTextFile(filePath, args.content);
 			echo("File saved to:", filePath);
-			roha.forge.push({name,path:filePath,contentType});
+			roha.forge.push({name,path:filePath,type:args.contentType});
 			return { success: true, path: filePath };
 		case "annotate_forge":
 			try {
