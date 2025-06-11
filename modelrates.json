@@ -1,4 +1,34 @@
 {
+	"ministral-3b-2410@mistral":{
+		"pricing":[0.04,0.04],
+		"purpose":"highly efficient, open-source 3-billion-parameter model",
+		"reality":"chokes for 10 minutes when sharing forge.js file"
+	},
+	"mistral-small-2503@mistral":{
+		"pricing":[0.10,0.30],
+		"purpose":"fast, cost-effective performance in translation, summarization, and sentiment analysis"
+	},
+	"mistral-medium-2505@mistral":{
+		"pricing":[0.40,2.00],
+		"purpose":"Optimized for: coding, mathematical reasoning, long document understanding, image to text, function calling, agentic orchestration"
+	},
+	"magistral-small-2506@mistral":{
+		"pricing":[0.50,1.50],
+		"purpose":"lightweight multilingual reasoning"
+	},
+	"magistral-medium-2506@mistral":{
+		"pricing":[2.00,5.00],
+		"purpose":"Enterprise-grade reasoning in law, healthcare, complex problem solving"
+	},
+	"codestral-2501@mistral":{
+		"pricing":[0.20,0.60],
+		"purpose":"Cheap high-volume code generation",
+		"reality":"Serious no nonsense Mistral AI model"
+	},
+	"devstral-small-2505@mistral":{
+		"pricing":[0.10,0.30],
+		"purpose":"Cheap open-source high-volume code generation"
+	},
 	"deepseek-chat@deepseek": {
 		"pricing": [0.27, 0.07, 1.10],
 		"purpose": "General conversation and text generation",

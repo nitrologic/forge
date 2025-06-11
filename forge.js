@@ -1447,14 +1447,15 @@ async function processToolCalls(calls) {
 
 async function relay(depth) {
 	const verbose=roha.config.verbose;
+	let payload={};
 	try {
 		const now=performance.now();
 		const modelAccount=grokModel.split("@");
 		let model=modelAccount[0];
 		let account=modelAccount[1];
 		let endpoint=rohaEndpoint[account];
+		payload={model};
 		const useTools=grokFunctions&&roha.config.tools;
-		let payload={model};
 		// some toolless models may get snurty unless messages are squashed
 		if(useTools){
 			payload.messages=rohaHistory;
@@ -1467,6 +1468,9 @@ async function relay(depth) {
 		if(info && !info.stone){
 			//echo("not stone",grokTemperature);
 			payload.temperature = grokTemperature;
+		}
+		if(info && info.max_tokens){
+			payload.max_tokens=info.max_tokens;
 		}
 		if(info && info.pricing.length>3 && grokThink>0){
 			payload.config={thinkingConfig:{thinkingBudget:grokThink}};
@@ -1560,6 +1564,17 @@ async function relay(depth) {
 				}
 				await relay(depth+1); // Recursive call to process tool results
 			}
+			const reasoning = choice.message.reasoning_content;
+			if(reasoning){
+				print("=== reasoning ===");
+				// print chain of thought
+				if (roha.config.ansi) {
+					print(mdToAnsi(reasoning));
+				} else {
+					print(wordWrap(reasoning));
+				}
+				print("=================");
+			}
 			const reply = choice.message.content;
 			if(reply){
 				if (roha.config.ansi) {
@@ -1604,6 +1619,9 @@ async function relay(depth) {
 		echo("unhandled error line:", line);
 		if(verbose){
 			echo(String(error));
+		}
+		if(roha.config.debugging){
+			echo(JSON.stringify(payload));
 		}
 	}
 }
@@ -1708,7 +1726,7 @@ for(let account in modelAccounts){
 
 await flush();
 let grokModel = roha.model||"deepseek-chat@deepseek";
-let grokFunctions=true;
+let grokFunctions=false;	// was default true; TODO: enable below
 let grokUsage = 0;
 let grokTemperature = 1.0;
 let grokThink = 0.0;

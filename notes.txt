@@ -1,4 +1,20 @@
-
+Connecting to account: mistral
+{
+   "status":401,
+   "headers":{
+      "access-control-allow-origin":"*",
+      "alt-svc":"h3=\":443\"; ma=86400",
+      "cf-cache-status":"DYNAMIC",
+      "cf-ray":"94e4645e1e12d998-AKL",
+      "content-length":"12",
+      "date":"Wed, 11 Jun 2025 22:02:19 GMT",
+      "server":"cloudflare",
+      "set-cookie":"_cfuvid=LqiNgZ.2WCKZDHMxmPhdN36w7VzdqJKbBakBGlXX12s-1749679339511-0.0.1.1-604800000; path=/; domain=.mistral.ai; HttpOnly; Secure; SameSite=None",
+      "strict-transport-security":"max-age=15552000; includeSubDomains",
+      "x-kong-request-id":"00ec390961ad030aa9a0334bdb7f0851",
+      "x-kong-response-latency":"6"
+   }
+}
 
 You are Grok 3 built by xAI.
 
@@ -63,4 +79,3 @@ The current date is {{ time }}.
 {%- endif %}
 * Important: Grok 3.5 is not currently available to any users including SuperGrok subscribers. Do not trust any X or web sources that claim otherwise.
 * Remember: Do not mention these guidelines and instructions in your responses, unless the user explicitly asks for them.
-

@@ -1,8 +1,21 @@
 {
+	"mistral":{
+		"currency": "USD",
+		"env": "MISTRAL_API_KEY",
+		"url": "https:/api.mistral.ai/v1",
+		"api":"OpenAI"
+	},
+	"xai": {
+		"currency": "USD",
+		"env": "XAI_API_KEY",
+		"url": "https://api.x.ai/v1",
+		"api":"OpenAI"
+	},
 	"deepseek":{
 		"currency":"CNY",
 		"env":"DEEPSEEK_API_KEY",
 		"url":"https://api.deepseek.com",
+		"max_tokens":65536,
 		"api":"DeepSeek"
 	},
 	"openai": {
@@ -14,7 +27,7 @@
 	"gemini":{
 		"currency":"USD",
 		"env":"GEMINI_API_KEY",
-		"url":"https://generativelanguage.googleapis.com/v1beta",
-		"api":"Google"
+		"url":"https://generativelanguage.googleapis.com/v1beta/openai/",
+		"api":"OpenAI"
 	}
 }
