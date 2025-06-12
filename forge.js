@@ -526,7 +526,7 @@ async function aboutModel(name){
 
 async function resetModel(name){
 	grokModel=name;
-	grokFunctions=true;
+	grokFunctions=false;
 	rohaHistory.push({role:"system",content:"Model changed to "+name+"."});
 	await aboutModel(name);
 }

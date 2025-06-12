@@ -15,8 +15,13 @@
 		"currency":"CNY",
 		"env":"DEEPSEEK_API_KEY",
 		"url":"https://api.deepseek.com",
-		"max_tokens":65536,
 		"api":"DeepSeek"
+	},
+	"alibaba":{
+		"currency": "USD",
+		"env": "ALIBABA_API_KEY",
+		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+		"api": "OpenAI"
 	},
 	"openai": {
 		"currency": "USD",

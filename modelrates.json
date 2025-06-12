@@ -1,4 +1,30 @@
 {
+	"deepseek-chat@deepseek": {
+		"pricing": [0.27, 0.07, 1.10],
+		"purpose": "General conversation and text generation",
+		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
+	},
+	"deepseek-reasoner@deepseek": {
+		"pricing": [0.55, 0.14, 2.19],
+		"purpose": "Advanced reasoning and problem-solving",
+		"press": "High-performance model for complex math, coding, and logical tasks."
+	},
+	"qwen-max@alibaba":{
+		"pricing": [1.60,6.40],
+		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
+	},
+	"qwen-plus@alibaba":{
+		"pricing":[0.40,1.20],
+		"purpose":"Balanced performance, speed and cost."
+	},
+	"qwen-turbo@alibaba":{
+		"pricing":[0.05,0.20],
+		"purpose":"Fast speed and low cost"
+	},
+	"qwen2-7b-instruct@alibaba":{
+		"pricing":[0.175,0.70],
+		"purpose":"Open source Qwen2 model"
+	},
 	"ministral-3b-2410@mistral":{
 		"pricing":[0.04,0.04],
 		"purpose":"highly efficient, open-source 3-billion-parameter model",
@@ -28,16 +54,6 @@
 	"devstral-small-2505@mistral":{
 		"pricing":[0.10,0.30],
 		"purpose":"Cheap open-source high-volume code generation"
-	},
-	"deepseek-chat@deepseek": {
-		"pricing": [0.27, 0.07, 1.10],
-		"purpose": "General conversation and text generation",
-		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
-	},
-	"deepseek-reasoner@deepseek": {
-		"pricing": [0.55, 0.14, 2.19],
-		"purpose": "Advanced reasoning and problem-solving",
-		"press": "High-performance model for complex math, coding, and logical tasks."
 	},
 	"o3-2025-04-16@openai":{
 		"pricing":[2.00, 0.50, 8.00],
@@ -102,36 +118,31 @@
 		"press":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents.",
 		"reality":"A tendency to regurgitate Mr Creosote style."
 	},
-	"grok-3-mini-fast-beta@xai": {
-		"pricing": [0.60, 4.00],
-		"purpose": "Fast text generation",
-		"press": "Lightweight, high-speed model for basic reasoning and cost-efficient applications."
-	},
-	"grok-3-mini-beta@xai": {
-		"pricing": [0.30, 0.50],
-		"purpose": "Efficient text generation",
-		"press": "Compact model for lightweight reasoning and cost-effective tasks.",
-		"reality": "128K token limit for nice and cheap, same positive vibe as big brother"
-	},
-	"grok-3-beta@xai": {
-		"pricing": [3.00, 15.00],
+	"grok-3@xai": {
+		"pricing": [3.00, 0.75, 15.00],
 		"purpose": "Text and code generation",
 		"press": "Versatile model balancing performance and cost for diverse applications.",
 		"reality": "Fair, thorough, sadly a tad expensive, oops, maximum prompt length exceeded."
 	},
-	"grok-3-fast-beta@xai": {
-		"pricing": [5.00, 25.00],
+	"grok-3-fast@xai": {
+		"pricing": [5.00, 1.25, 25.00],
 		"purpose": "Rapid text generation and reasoning",
 		"press": "High-speed model for time-sensitive tasks and efficient processing."
 	},
+	"grok-3-mini@xai": {
+		"pricing": [0.30, 0.075, 0.50],
+		"purpose": "Efficient text generation",
+		"press": "Compact model for lightweight reasoning and cost-effective tasks.",
+		"reality": "128K token limit for nice and cheap, same positive vibe as big brother"
+	},
+	"grok-3-mini-fast@xai": {
+		"pricing": [0.60, 0.15, 4.00],
+		"purpose": "Fast text generation",
+		"press": "Lightweight, high-speed model for basic reasoning and cost-efficient applications."
+	},
 	"grok-2-1212@xai": {
-		"pricing": [5.00, 15.00],
+		"pricing": [2.00, 10.00],
 		"purpose": "Advanced reasoning and code generation",
 		"press": "High-performance model for complex research tasks and multi-step workflows."
-	},
-	"grok-beta@xai": {
-		"pricing": [5.00, 15.00],
-		"purpose": "Text and code generation",
-		"press": "Robust model with advanced reasoning and function-calling capabilities."
 	}
 }
