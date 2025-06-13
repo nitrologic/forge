@@ -342,7 +342,7 @@ async function listModels(config){
 	}
 	return null;
 }
-
+//https://ai.google.dev/gemini-api/docs/text-generation
 async function connectGoogle(account,config){
 	try{
 		const baseURL = config.url;
@@ -371,12 +371,16 @@ async function connectGoogle(account,config){
 			chat: {
 				completions: {
 					create: async (payload) => {
+//						config: { systemInstruction: setup, maxOutputTokens: 500,temperature: 0.1, }
 						const model = genAI.getGenerativeModel({model:payload.model});
+//						const content = payload.messages;
+
 						const content = payload.messages[0].content;
 						const result = await model.generateContent(content);
 //						console.log("result",result);
 						const text=await result.response.text();
-						const usage=result.response.usageMetadata;
+						const usage=result.response.usageMetadata||{};
+
 						return {
 							model:payload.model,
 							choices:[{message:{content:text}}],
@@ -1501,7 +1505,7 @@ async function relay(depth) {
 				const outputRate=rate[rate.length>2?2:1];
 				if(rate.length>2){
 					const cacheRate=rate[1];
-					const cached=usage.prompt_tokens_details.cached_tokens||0;
+					const cached=usage.prompt_tokens_details?(usage.prompt_tokens_details.cached_tokens||0):0;
 					spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6+cached*cacheRate/1e6;
 
 				}else{
