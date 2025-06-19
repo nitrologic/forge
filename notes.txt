@@ -1,3 +1,26 @@
+ecs.t5-lc2m1.nano
+
+alibaba -> dashscope 
+
+# boot.sh 
+
+sudo hostname -b syd
+sudo systemctl start redis6
+sudo service nginx start
+pushd dsptool/native/bin
+cmake ..
+make -j8
+#gdb -ex "set print thread-events off" -ex=run ./fit3
+./fit3
+popd
+
+# cert.sh 
+
+sudo service nginx stop
+sudo certbot certonly --standalone -d sydney.skid.nz
+sudo service nginx start
+
+
 Connecting to account: mistral
 {
    "status":401,

@@ -2,6 +2,7 @@
 // A research tool for smelting large language models.
 // (c)2025 Simon Armstrong
 
+import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.67.2/mod.ts";
@@ -906,32 +907,9 @@ async function shareBlob(path,size,tag){
 		const content = await Deno.readTextFile(path);
 		rohaPush(content,"forge");
 	} else {
-		const file = await Deno.open(path,{read:true});
-		if (!file.readable) {
-			throw new Error("Invalid file: readable stream required");
-		}
-		if (!mimeType) {
-			throw new Error("MIME type required");
-		}
-		const chunks = [];
-		const reader = file.readable.getReader();
-		try {
-			while (true) {
-				const { done, value } = await reader.read();
-				if (done) break;
-				chunks.push(value);
-			}
-			const buffer = await new Blob(chunks).arrayBuffer();
-			const bytes = new Uint8Array(buffer);
-			const base64Encoded = btoa(String.fromCharCode(...bytes));
-			rohaPush(`File content: MIME=${mimeType}, Base64=${base64Encoded}`, "forge");
-		} catch (error) {
-			echo("ShareBlob encoding error",error.message);
-			return false;
-		} finally {
-			reader.releaseLock();
-			file.close();
-		}
+		const data = await Deno.readFile(path);
+		const base64 = encodeBase64(data);
+		rohaPush(`File content: MIME=${mimeType}, Base64=${base64}`, "forge");
 	}
 	return true;
 }

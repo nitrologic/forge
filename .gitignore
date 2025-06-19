@@ -7,3 +7,4 @@ forge.json
 publish.sh
 foundry
 forge-rc3
+*.pdf
