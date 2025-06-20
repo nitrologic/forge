@@ -462,7 +462,7 @@ async function connectOpenAIAccount(account,config) {
 				let content=String(value);
 				content=content.replace(/\n/g, " ");
 				content=content.substring(0,30);
-				echo("endpoint:"+key+":"+content);
+				if(key!="apiKey") echo("endpoint:"+key+":"+content);
 			}
 		}
 	//		const models2=await listModels(config);
