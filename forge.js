@@ -5,7 +5,7 @@
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
-import OpenAI from "https://deno.land/x/openai@v4.67.2/mod.ts";
+import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
 const forgeVersion = "1.0.5";
@@ -217,6 +217,19 @@ const rohaTools = [{
 	}
 },{
 	type: "function",
+	function:{
+		name: "fetch_image",
+		description: "Request an image to analyse",
+		parameters: {
+			type: "object",
+			properties: {
+				fileName:{type:"string"}
+			},
+			required: ["fileName"]
+		}
+	}
+},{
+	type: "function",
 	function: {
 		name: "annotate_forge",
 		description: "Set description of any object",
@@ -275,7 +288,6 @@ function echo(){
 }
 
 function debug(title,value){
-	print("DDDDDDDDDDDDDDDDDDDDDD");
 	print(title);
 	if(roha.config.verbose){
 		const json=JSON.stringify(value);
@@ -1343,6 +1355,13 @@ async function onCall(toolCall) {
 			echo("File saved to:", filePath);
 			roha.forge.push({name,path:filePath,type:args.contentType});
 			return { success: true, path: filePath };
+		case "fetch_image":
+			const { fileName } = JSON.parse(toolCall.function.arguments || "{}");
+			echo("Fetching image:", fileName);
+			let path="media/"+fileName;
+			const data = await Deno.readFile(path);
+			const base64 = encodeBase64(data);			
+			return { success: true, path: fileName, Base64:base64 };
 		case "annotate_forge":
 			try {
 				const { name, type, description } = JSON.parse(toolCall.function.arguments || "{}");
@@ -1708,7 +1727,7 @@ for(let account in modelAccounts){
 
 await flush();
 let grokModel = roha.model||"deepseek-chat@deepseek";
-let grokFunctions=false;	// was default true; TODO: enable below
+let grokFunctions=true;
 let grokUsage = 0;
 let grokTemperature = 1.0;
 let grokThink = 0.0;

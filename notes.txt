@@ -1,3 +1,125 @@
+"url": "https://api.openai.com/v1/chat/completions",
+"url": "https://api.openai.com/v1/responses",
+
+
+Connecting to account: mistral
+endpoint:baseURL:https:/api.mistral.ai/v1
+endpoint:maxRetries:2
+endpoint:timeout:600000
+endpoint:httpAgent:undefined
+endpoint:fetch:function fetch(input, init = {
+endpoint:idempotencyHeader:undefined
+endpoint:apiKey:GaFqnNd8Miek1zeY2NYDqSiFfFF6CD
+endpoint:organization:null
+endpoint:project:null
+endpoint:_options:[object Object]
+endpoint:completions:[object Object]
+endpoint:chat:[object Object]
+endpoint:embeddings:[object Object]
+endpoint:files:[object Object]
+endpoint:images:[object Object]
+endpoint:audio:[object Object]
+endpoint:moderations:[object Object]
+endpoint:models:[object Object]
+endpoint:fineTuning:[object Object]
+endpoint:beta:[object Object]
+endpoint:batches:[object Object]
+endpoint:uploads:[object Object]
+Connecting to account: xai
+endpoint:baseURL:https://api.x.ai/v1
+endpoint:maxRetries:2
+endpoint:timeout:600000
+endpoint:httpAgent:undefined
+endpoint:fetch:function fetch(input, init = {
+endpoint:idempotencyHeader:undefined
+endpoint:apiKey:xai-D0Fp8pdZOEtGnZj7KZMT6rvNZU
+endpoint:organization:null
+endpoint:project:null
+endpoint:_options:[object Object]
+endpoint:completions:[object Object]
+endpoint:chat:[object Object]
+endpoint:embeddings:[object Object]
+endpoint:files:[object Object]
+endpoint:images:[object Object]
+endpoint:audio:[object Object]
+endpoint:moderations:[object Object]
+endpoint:models:[object Object]
+endpoint:fineTuning:[object Object]
+endpoint:beta:[object Object]
+endpoint:batches:[object Object]
+endpoint:uploads:[object Object]
+Connecting to account: deepseek
+Connecting to account: alibaba
+endpoint:baseURL:https://dashscope-intl.aliyunc
+endpoint:maxRetries:2
+endpoint:timeout:600000
+endpoint:httpAgent:undefined
+endpoint:fetch:function fetch(input, init = {
+endpoint:idempotencyHeader:undefined
+endpoint:apiKey:sk-a9fea481179149a4a7c63671eda
+endpoint:organization:null
+endpoint:project:null
+endpoint:_options:[object Object]
+endpoint:completions:[object Object]
+endpoint:chat:[object Object]
+endpoint:embeddings:[object Object]
+endpoint:files:[object Object]
+endpoint:images:[object Object]
+endpoint:audio:[object Object]
+endpoint:moderations:[object Object]
+endpoint:models:[object Object]
+endpoint:fineTuning:[object Object]
+endpoint:beta:[object Object]
+endpoint:batches:[object Object]
+endpoint:uploads:[object Object]
+Connecting to account: openai
+endpoint:baseURL:https://api.openai.com/v1
+endpoint:maxRetries:2
+endpoint:timeout:600000
+endpoint:httpAgent:undefined
+endpoint:fetch:function fetch(input, init = {
+endpoint:idempotencyHeader:undefined
+endpoint:apiKey:sk-proj-cNbM440MtHQ207REbxQQKo
+endpoint:organization:null
+endpoint:project:null
+endpoint:_options:[object Object]
+endpoint:completions:[object Object]
+endpoint:chat:[object Object]
+endpoint:embeddings:[object Object]
+endpoint:files:[object Object]
+endpoint:images:[object Object]
+endpoint:audio:[object Object]
+endpoint:moderations:[object Object]
+endpoint:models:[object Object]
+endpoint:fineTuning:[object Object]
+endpoint:beta:[object Object]
+endpoint:batches:[object Object]
+endpoint:uploads:[object Object]
+Connecting to account: gemini
+endpoint:baseURL:https://generativelanguage.goo
+endpoint:maxRetries:2
+endpoint:timeout:600000
+endpoint:httpAgent:undefined
+endpoint:fetch:function fetch(input, init = {
+endpoint:idempotencyHeader:undefined
+endpoint:apiKey:AIzaSyCEL0HkaLg5FbzIonCcq38rVs
+endpoint:organization:null
+endpoint:project:null
+endpoint:_options:[object Object]
+endpoint:completions:[object Object]
+endpoint:chat:[object Object]
+endpoint:embeddings:[object Object]
+endpoint:files:[object Object]
+endpoint:images:[object Object]
+endpoint:audio:[object Object]
+endpoint:moderations:[object Object]
+endpoint:models:[object Object]
+endpoint:fineTuning:[object Object]
+endpoint:beta:[object Object]
+endpoint:batches:[object Object]
+endpoint:uploads:[object Object]
+present [ grok-3@xai ]
+
 ecs.t5-lc2m1.nano
 
 alibaba -> dashscope 
