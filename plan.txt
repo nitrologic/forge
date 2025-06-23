@@ -1,3 +1,6 @@
+- add responses and assistants api support
+- check valid assistant, tool and user role usage
+- explore vector_store and fine tuning of models
 - support DeepSeek user balance https://api-docs.deepseek.com/api/get-user-balance
 - load / continue history saves
 - raw mode - fix multiline paste
