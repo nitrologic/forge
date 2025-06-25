@@ -1682,6 +1682,7 @@ async function chat() {
 				continue;
 			}
 			lines.push(line.trim());
+			await log(line,"prompt")
 		}
 
 		if (lines.length){
