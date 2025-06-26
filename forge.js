@@ -10,7 +10,7 @@ import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
 const forgeVersion = "1.0.5";
 const rohaTitle="forge "+forgeVersion;
-const rohaMihi="I am testing roha forge client. You are a helpful assistant.";
+const rohaMihi="I am an experienced software engineer. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const exitMessage="";
 const break40="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
@@ -902,6 +902,10 @@ function annotateCode(name,description){
 	echo("annotateCode",name,description);
 }
 
+const imageExtensions=[
+	"jpg","jpeg","png"
+];
+
 const textExtensions = [
 	"js", "ts", "txt", "json", "md",
 	"css","html", "svg",
@@ -911,8 +915,8 @@ const textExtensions = [
 ];
 
 async function shareBlob(path,size,tag){
-	const extension = path.split(".").pop();
-	const mimeType = fileType(extension);
+	const extension = path.split(".").pop().toLowerCase();
+	const mimeType = fileType(extension);	
 	const metadata = JSON.stringify({ path:path,length:size,type:mimeType,tag });
 	rohaPush(metadata);
 	if (textExtensions.includes(extension)) {
@@ -1114,8 +1118,6 @@ async function callCommand(command) {
 				}
 				echo("Current model thinking budget is", grokThink);
 				break;
-
-
 			case "temp":
 				if (words.length > 1) {
 					const newTemp = parseFloat(words[1]);
@@ -1476,6 +1478,10 @@ async function relay(depth) {
 		if(info && info.pricing.length>3 && grokThink>0){
 			payload.config={thinkingConfig:{thinkingBudget:grokThink}};
 		}
+		if(roha.config.debugging){
+//			debug("payload",JSON.stringify(payload));
+			echo(JSON.stringify(payload));
+		}		
 //		if(config.hasCache) payload.cache_tokens=true;
 		const completion = await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
@@ -1621,9 +1627,9 @@ async function relay(depth) {
 		if(verbose){
 			echo(String(error));
 		}
-		if(roha.config.debugging){
-			echo(JSON.stringify(payload));
-		}
+//		if(roha.config.debugging){
+//			echo(JSON.stringify(payload));
+//		}
 	}
 }
 

@@ -100,7 +100,7 @@
 		"pricing":[75.00,37.50,150.00],
 		"purpose":"burn money"
 	},
-	"models/gemini-2.5-pro-preview-05-06@gemini":{
+	"models/gemini-2.5-pro-preview-06-05@gemini":{
 		"pricing":[1.25,10.0],
 		"purpose":"Excels at coding and complex reasoning tasks",
 		"press":"A state-of-the-art multipurpose model",
@@ -117,6 +117,12 @@
 		"purpose":"High-performance multimodal model optimized for agent-based applications.",
 		"press":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents.",
 		"reality":"A tendency to regurgitate Mr Creosote style."
+	},
+	"grok-2-vision-1212@xai":{
+		"pricing": [3.00, 0.75, 15.00],
+		"modalities": ["vision"],
+		"purpose": "Image vision, text and code generation",
+		"reality": "Model under test."
 	},
 	"grok-3@xai": {
 		"pricing": [3.00, 0.75, 15.00],
