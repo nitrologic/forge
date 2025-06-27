@@ -8,13 +8,13 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
-const forgeVersion = "1.0.5";
+const forgeVersion = "1.0.6";
 const rohaTitle="forge "+forgeVersion;
 const rohaMihi="I am an experienced software engineer. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const exitMessage="";
-const break40="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
-const pageBreak=break40+break40+break40;
+const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
+const pageBreak=break50+break50+break50;
 
 const terminalColumns=120;
 const slowMillis=25;
@@ -413,7 +413,7 @@ async function connectGoogle(account,config){
 	}
 }
 
-async function connectDeep(account,config) {
+async function connectDeepSeek(account,config) {
 	try{
 		const baseURL = config.url;
 		const apiKey = Deno.env.get(config.env);
@@ -453,7 +453,7 @@ async function connectDeep(account,config) {
 	}
 }
 
-async function connectOpenAIAccount(account,config) {
+async function connectOpenAI(account,config) {
 	try{
 		const apiKey = Deno.env.get(config.env);
 		const endpoint = new OpenAI({ apiKey, baseURL: config.url });
@@ -496,9 +496,9 @@ async function connectAccount(account) {
 	const api= config.api;
 	switch(api){
 		case "OpenAI":
-			return await connectOpenAIAccount(account,config)
+			return await connectOpenAI(account,config)
 		case "DeepSeek":
-			return await connectDeep(account,config)
+			return await connectDeepSeek(account,config)
 		case "Google":
 			return await connectGoogle(account,config)
 	}
@@ -1480,7 +1480,7 @@ async function relay(depth) {
 		}
 		if(roha.config.debugging){
 //			debug("payload",JSON.stringify(payload));
-			echo(JSON.stringify(payload));
+			echo(JSON.stringify(payload,null,"\t"));
 		}		
 //		if(config.hasCache) payload.cache_tokens=true;
 		const completion = await endpoint.chat.completions.create(payload);

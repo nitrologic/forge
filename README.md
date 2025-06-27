@@ -8,6 +8,8 @@ Requires an api environment variable, see accounts.json for latest
 * XAI_API_KEY 
 * OPENAI_API_KEY
 * GEMINI_API_KEY
+* MISTRAL_API_KEY
+* ALIBABA_API_KEY
 
 # interface
 
