@@ -12,6 +12,7 @@ const forgeVersion = "1.0.6";
 const rohaTitle="forge "+forgeVersion;
 const rohaMihi="I am an experienced software engineer. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
+const warnDirty="Please review source for bugs and all content if notable changes detected, thanks.";
 const exitMessage="";
 const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
 const pageBreak=break50+break50+break50;
@@ -465,13 +466,13 @@ async function connectOpenAI(account,config) {
 				if(key!="apiKey") echo("endpoint:"+key+":"+content);
 			}
 		}
-	//		const models2=await listModels(config);
+//		const models2=await listModels(config);
 		const models = await endpoint.models.list();
 		const list=[];
 		for (const model of models.data) {
 			let name=model.id+"@"+account;
 			list.push(name);
-	// dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
+// dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
 			await specModel(model,account);
 		}
 		list.sort();
@@ -1682,7 +1683,7 @@ async function chat() {
 				const command = line.substring(1).trim();
 				let dirty=await callCommand(command);
 				if(dirty){
-					lines.push("Please review source for bugs and all content if notable changes detected, thanks.");
+					lines.push(warnDirty);
 					break;
 				}
 				continue;

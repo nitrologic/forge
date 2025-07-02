@@ -1,4 +1,10 @@
-# nitrologic forge
+This repository is scheduled for demolition.
+
+Please see here for nitrologic roha foundry forge latest generation:
+
+[slop fountain](https://github.com/nitrologic/fountain)
+
+# nitrologic forge (DEPRECATED)
 
 A research tool for advanced model manipulation.
 
